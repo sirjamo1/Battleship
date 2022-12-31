@@ -63,6 +63,6 @@ test("attack on already hit ship", () => {
     );
 });
 //console.log whole board (visual ref)
-test("log board", () => {
-    console.log(boardTest.board);
-});
+// test("log board", () => {
+//     console.log(boardTest.board);
+// });

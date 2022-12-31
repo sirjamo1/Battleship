@@ -5,7 +5,7 @@ const boardSize = 10;
 //      *
 //      *
 //      *
-//      * register when hit
+//      * 
 //      *
 class GameBoard {
     constructor(attackList = []) {
@@ -73,8 +73,11 @@ class GameBoard {
         } else if (this.board[coord[0]][coord[1]] === "x") {
             return `${coord} has already been tried`;
         } else if (this.board[coord[0]][coord[1]].slice(-3) === "HIT") {
-         let shipStrLength = this.board[coord[0]][coord[1]].length;
-         return `${this.board[coord[0]][coord[1]].slice(0, shipStrLength - 4)} has already been hit`;
+            let shipStrLength = this.board[coord[0]][coord[1]].length;
+            return `${this.board[coord[0]][coord[1]].slice(
+                0,
+                shipStrLength - 4
+            )} has already been hit`;
         } else {
             for (let i = 0; i < this.ships.length; i += 1) {
                 if (this.ships[i].name === this.board[coord[0]][coord[1]]) {
@@ -82,6 +85,9 @@ class GameBoard {
                     this.board[coord[0]][coord[1]] += " HIT";
                     if (this.ships[i].isSunk() === true) {
                         this.shipsLeft -= 1;
+                        if (this.shipsLeft === 0) {
+                            return `${this.shipsLeft} GAME OVER`;
+                        }
                     }
                 }
             }
