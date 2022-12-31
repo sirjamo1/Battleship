@@ -9,5 +9,6 @@ test("check length of gameBoard", () => {
 })
 test("check placement of ships", () => {
  player1.populateBoard()
- console.log(player1.playerGameBoard.board)
+ console.log(player1.playerGameBoard);
+ expect(player1.playerGameBoard.shipsNotDeployed).toBe(0)
 })

@@ -34,7 +34,7 @@ class GameBoard {
         };
         this.ships = [];
         this.shipsLeft = 5;
-
+        this.shipsNotDeployed = 5
         this.attackList = attackList;
         this.createBoard();
     }
@@ -65,6 +65,7 @@ class GameBoard {
             this.board[square[0]][square[1]] = shipName;
         });
         this.shipList[shipName].quantity -= 1;
+        this.shipsNotDeployed -= 1;
     }
     receiveAttack(coord) {
         if (this.board[coord[0]][coord[1]].length === 0) {
