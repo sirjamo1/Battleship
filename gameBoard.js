@@ -33,6 +33,7 @@ class GameBoard {
             },
         };
         this.ships = [];
+        this.shipsLeft = 5;
 
         this.attackList = attackList;
         this.createBoard();
@@ -50,7 +51,6 @@ class GameBoard {
         if (this.shipList[shipName].quantity <= 0) {
             return `${shipName} is already on the board`;
         }
-
         let coordArray = this.getCoordArray(
             coord,
             dir,
@@ -59,12 +59,11 @@ class GameBoard {
         let largestShipLength = 5;
         if (coordArray.length > largestShipLength) return coordArray;
         const ship = new Ship(this.shipList[shipName].length, shipName);
-        this.ships.push(ship);
         ship.shipCoord = coordArray;
+        this.ships.push(ship);
         coordArray.forEach((square) => {
             this.board[square[0]][square[1]] = shipName;
         });
-        
         this.shipList[shipName].quantity -= 1;
     }
     receiveAttack(coord) {
@@ -73,10 +72,19 @@ class GameBoard {
             return this.attackList.push(coord);
         } else if (this.board[coord[0]][coord[1]] === "x") {
             return `${coord} has already been tried`;
+        } else if (this.board[coord[0]][coord[1]].slice(-3) === "HIT") {
+         let shipStrLength = this.board[coord[0]][coord[1]].length;
+         return `${this.board[coord[0]][coord[1]].slice(0, shipStrLength - 4)} has already been hit`;
         } else {
-            console.log(this.ships);
-            let shipName = this.board[coord[0]][coord[1]];
-            console.log(shipName);
+            for (let i = 0; i < this.ships.length; i += 1) {
+                if (this.ships[i].name === this.board[coord[0]][coord[1]]) {
+                    this.ships[i].hit();
+                    this.board[coord[0]][coord[1]] += " HIT";
+                    if (this.ships[i].isSunk() === true) {
+                        this.shipsLeft -= 1;
+                    }
+                }
+            }
         }
     }
     getCoordArray(coord, dir, shipLength) {

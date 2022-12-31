@@ -53,12 +53,16 @@ test("check attackList after receiveAttack is run again", () => {
 test("check board to see if previous attacks has logged", () => {
     expect(boardTest.board[2][6]).toBe("x");
 });
+
 test("check attack on ship", () => {
     boardTest.receiveAttack([4, 4]);
-
-})
-
+});
+test("attack on already hit ship", () => {
+    expect(boardTest.receiveAttack([4, 4])).toBe(
+        "cruiser has already been hit"
+    );
+});
 //console.log whole board (visual ref)
-// test("log board", () => {
-//     console.log(boardTest.board);
-// });
+test("log board", () => {
+    console.log(boardTest.board);
+});
