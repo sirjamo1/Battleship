@@ -7,16 +7,36 @@ class Player {
         this.playerTurn = playerTurn;
     }
     populateBoard() {
-        this.playerGameBoard.createShip([1, 3], "x", "carrier");
-        this.playerGameBoard.createShip([2, 2], "x", "battleship");
-        this.playerGameBoard.createShip([3, 4], "x", "cruiser");
-        this.playerGameBoard.createShip([4, 4], "x", "submarine");
-        this.playerGameBoard.createShip([5, 4], "x", "destroyer");
-        // this.playerGameBoard.createShip(this.randomCoord(), "x", "carrier");
-        // this.playerGameBoard.createShip(this.randomCoord(), "y", "battleship");
-        // this.playerGameBoard.createShip(this.randomCoord(), "x", "cruiser");
-        // this.playerGameBoard.createShip(this.randomCoord(), "y", "submarine");
-        // this.playerGameBoard.createShip(this.randomCoord(), "x", "destroyer");
+        // this.playerGameBoard.createShip([1, 3], "x", "carrier");
+        // this.playerGameBoard.createShip([2, 2], "x", "battleship");
+        // this.playerGameBoard.createShip([3, 4], "x", "cruiser");
+        // this.playerGameBoard.createShip([4, 4], "x", "submarine");
+        // this.playerGameBoard.createShip([5, 4], "x", "destroyer");
+        this.playerGameBoard.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "carrier"
+        );
+        this.playerGameBoard.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "battleship"
+        );
+        this.playerGameBoard.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "cruiser"
+        );
+        this.playerGameBoard.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "submarine"
+        );
+        this.playerGameBoard.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "destroyer"
+        );
         while (this.playerGameBoard.shipsNotDeployed !== 0) {
             this.populateBoard();
         }
@@ -24,18 +44,20 @@ class Player {
     randomCoord() {
         return [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)];
     }
+    randomOrientation() {
+        return Math.round(Math.random()) === 0 ? "x" : "y";
+    }
     randomShot() {
         let coord = this.randomCoord();
         let attackList = this.playerGameBoard.attackList;
         if (attackList.length === 0)
             return this.playerGameBoard.receiveAttack(coord);
         for (let i = 0; i < attackList.length; i += 1) {
-         if (coord === attackList[i]) {
-          this.randomShot()
-         }
+            if (coord === attackList[i]) {
+                return this.randomShot();
+            }
         }
-        return this.playerGameBoard.receiveAttack(coord)
-        // console.log(this.playerGameBoard.attackList.length)
+        this.playerGameBoard.receiveAttack(coord);
     }
 }
 

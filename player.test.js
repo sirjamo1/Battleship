@@ -12,15 +12,15 @@ test("check placement of ships", () => {
  expect(player1.playerGameBoard.shipsNotDeployed).toBe(0)
 })
 test("random shot check", () => {
- player1.populateBoard()
  player1.randomShot()
-  player1.randomShot();
-   player1.randomShot();
-    player1.randomShot();
-     player1.randomShot();
-      player1.randomShot();
-       player1.randomShot();
-        player1.randomShot();
- console.log(player1.playerGameBoard);
- expect(player1.playerGameBoard.attackList.length).toBe(8)
+ 
+       console.log(player1.randomOrientation())
+ //console.log(player1.playerGameBoard);
+ expect(player1.playerGameBoard.attackList.length).toBe(1)
+})
+test("check orientation method returns y or x", () => {
+ expect(player1.randomOrientation()).toMatch(/^x|y$/);
+})
+test("console.log board", () => {
+ console.log(player1.playerGameBoard.board)
 })
