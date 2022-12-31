@@ -84,6 +84,7 @@ class GameBoard {
                 if (this.ships[i].name === this.board[coord[0]][coord[1]]) {
                     this.ships[i].hit();
                     this.board[coord[0]][coord[1]] += " HIT";
+                    this.attackList.push(coord);
                     if (this.ships[i].isSunk() === true) {
                         this.shipsLeft -= 1;
                         if (this.shipsLeft === 0) {
