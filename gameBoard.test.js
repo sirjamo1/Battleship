@@ -5,6 +5,7 @@ const boardTest = new GameBoard();
 test("check squares", () => {
     expect(boardTest.board.length).toBe(10);
 });
+// Adding ship tests
 test("Adding ship (carrier)(horizontal), and check board for it", () => {
     boardTest.createShip([1, 1], "x", "carrier");
     expect(boardTest.board[1][1] && boardTest.board[1][5]).toBe("carrier");
@@ -33,6 +34,8 @@ test("check either side carrier ship === []", () => {
     expect(boardTest.board[1][0] && boardTest.board[1][6]).toStrictEqual([]);
 });
 
+//Attacking tests
+
 test("check attackList is empty(before any attacks)", () => {
     expect(boardTest.attackList).toStrictEqual([]);
 });
@@ -50,7 +53,12 @@ test("check attackList after receiveAttack is run again", () => {
 test("check board to see if previous attacks has logged", () => {
     expect(boardTest.board[2][6]).toBe("x");
 });
+test("check attack on ship", () => {
+    boardTest.receiveAttack([4, 4]);
 
-test("log board", () => {
-    console.log(boardTest.board);
-});
+})
+
+//console.log whole board (visual ref)
+// test("log board", () => {
+//     console.log(boardTest.board);
+// });

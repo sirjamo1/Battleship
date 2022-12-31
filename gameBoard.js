@@ -2,9 +2,9 @@ import { Ship } from "./ships";
 const boardSize = 10;
 //NEED TO:
 // *make sure when adding ships they don't
-//      * 
-//      * 
-//      * 
+//      *
+//      *
+//      *
 //      * register when hit
 //      *
 class GameBoard {
@@ -32,6 +32,7 @@ class GameBoard {
                 quantity: 1,
             },
         };
+        this.ships = [];
 
         this.attackList = attackList;
         this.createBoard();
@@ -46,21 +47,37 @@ class GameBoard {
         }
     }
     createShip(coord, dir, shipName) {
-        if (this.shipList[shipName].quantity <= 0)
+        if (this.shipList[shipName].quantity <= 0) {
             return `${shipName} is already on the board`;
-        const ship = new Ship(this.shipList[shipName].length);
-        let coordArray = this.getCoordArray(coord, dir, ship.length);
+        }
+
+        let coordArray = this.getCoordArray(
+            coord,
+            dir,
+            this.shipList[shipName].length
+        );
         let largestShipLength = 5;
         if (coordArray.length > largestShipLength) return coordArray;
+        const ship = new Ship(this.shipList[shipName].length, shipName);
+        this.ships.push(ship);
         ship.shipCoord = coordArray;
         coordArray.forEach((square) => {
             this.board[square[0]][square[1]] = shipName;
         });
+        
         this.shipList[shipName].quantity -= 1;
     }
     receiveAttack(coord) {
-        this.board[coord[0]][coord[1]] = "x";
-        return this.attackList.push(coord);
+        if (this.board[coord[0]][coord[1]].length === 0) {
+            this.board[coord[0]][coord[1]] = "x";
+            return this.attackList.push(coord);
+        } else if (this.board[coord[0]][coord[1]] === "x") {
+            return `${coord} has already been tried`;
+        } else {
+            console.log(this.ships);
+            let shipName = this.board[coord[0]][coord[1]];
+            console.log(shipName);
+        }
     }
     getCoordArray(coord, dir, shipLength) {
         let coordArray = [];
