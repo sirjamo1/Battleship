@@ -1,6 +1,6 @@
 import { GameBoard } from "./gameBoard";
 //NEED TO:
-//       *create random x / y generator
+//       *
 class Player {
     constructor(playerTurn = false) {
         this.playerGameBoard = new GameBoard();
@@ -61,7 +61,7 @@ class Player {
     }
 }
 
-export { Player };
+export {  Player };
 
 //  populateBoard() {
 //     this.playerGameBoard.createShip(

@@ -2,9 +2,11 @@
   "name": "battleship",
   "version": "1.0.0",
   "description": "battleship project for the odin project",
-  "main": "main.js",
+  "private": true,
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "webpack",
+    "start": "serve dist"
   },
   "keywords": [
     "battleship",
@@ -12,10 +14,25 @@
     "odin",
     "project"
   ],
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "author": "james howells",
   "license": "ISC",
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
-    "jest": "^29.3.1"
-  }
+    "jest": "^29.3.1",
+    "serve": "^12.0.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "main": "webpack.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sirjamo1/Battleship.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sirjamo1/Battleship/issues"
+  },
+  "homepage": "https://github.com/sirjamo1/Battleship#readme"
 }

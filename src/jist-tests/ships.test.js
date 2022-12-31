@@ -1,4 +1,4 @@
-import { Ship } from "./ships";
+import { Ship } from "../classes/ships";
 const shipTest = new Ship(2);
 test("check ships length", () => {
     expect(shipTest.length).toBe(2);
