@@ -2,9 +2,9 @@ import { Ship } from "./ships";
 const boardSize = 10;
 //NEED TO:
 // *make sure when adding ships they don't
-//      * overlap
-//      * duplicate ships (only 1 of each)
-//      * go of board when creating
+//      * 
+//      * 
+//      * 
 //      * register when hit
 //      *
 class GameBoard {
@@ -46,6 +46,8 @@ class GameBoard {
         }
     }
     createShip(coord, dir, shipName) {
+        if (this.shipList[shipName].quantity <= 0)
+            return `${shipName} is already on the board`;
         const ship = new Ship(this.shipList[shipName].length);
         let coordArray = this.getCoordArray(coord, dir, ship.length);
         let largestShipLength = 5;
@@ -54,6 +56,7 @@ class GameBoard {
         coordArray.forEach((square) => {
             this.board[square[0]][square[1]] = shipName;
         });
+        this.shipList[shipName].quantity -= 1;
     }
     receiveAttack(coord) {
         this.board[coord[0]][coord[1]] = "x";
