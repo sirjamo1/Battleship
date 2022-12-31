@@ -13,6 +13,11 @@ test("Adding ship (carrier)(horizontal), and check board for it", () => {
 test("Try adding ship (destroyer) to same space as carrier", () => {
     expect(boardTest.createShip([1, 3], 'x', "destroyer")).toBe("carrier occupies this space")
 })
+test("Try adding ship (destroyer) off the board", () => {
+    expect(boardTest.createShip([11, 3], "x", "destroyer")).toBe(
+        "Ship must be placed on board"
+    );
+});
 test("adding ship (cruiser) (vertical) and check board for it", () => {
     boardTest.createShip([4, 4], "y", "cruiser");
     expect(boardTest.board[4][4] && boardTest.board[6][4]).toBe("cruiser")

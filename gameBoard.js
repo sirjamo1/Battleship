@@ -64,10 +64,10 @@ class GameBoard {
         for (let i = 0; i < shipLength; i += 1) {
             let y = dir === "x" ? coord[0] : coord[0] + i;
             let x = dir === "x" ? coord[1] + i : coord[1];
-            if (this.board[y][x].length !== 0) {
+            if (y > 9 || y < 0 || x > 9 || x < 0) {
+                return "Ship must be placed on board";
+            } else if (this.board[y][x].length !== 0) {
                 return `${this.board[y][x]} occupies this space`;
-            } else if (y > 9 && y < 0 && x > 9 && x < 0) {
-                return console.log("Ship must be placed on board");
             } else {
                 coordArray.push([y, x]);
             }
