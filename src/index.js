@@ -8,6 +8,19 @@ let gameStarted = false;
 let shipSelection = null;
 let shipPlacementDirection = "x";
 //let playerOneTurn = false
+
+//NEED TO DO
+//          *stop computer taking turn if clicked square is clicked again
+//          *reset button
+//          *if computer hits ship, continue trying to hit around it
+//          *delay 0.3 sec before computer turn
+//          *add ships images over squares
+//          *fix x / y placement bug
+//          *move ship placement menu to middle of screen (maybe make half red/blue)
+//          *title
+//          *move log
+
+
 const createPlayerBoard = (playerName, player) => {
     const board = document.createElement("div");
     board.id = `${playerName}-board`;
