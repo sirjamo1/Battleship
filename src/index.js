@@ -52,6 +52,7 @@ const isGameReadyToStart = (x, y) => {
     removeShipOption(shipSelection);
 };
 const fireShots = (x, y, player, square) => {
+    if (square.style.backgroundColor === "pink" || square.style.backgroundColor === "purple") return alert("Try another square")
     playerTwo.playerGameBoard.receiveAttack([x, y]);
     if (player.playerGameBoard.board[x][y] === "x") {
         square.style.backgroundColor = "pink";
