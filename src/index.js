@@ -20,7 +20,6 @@ let shipPlacementDirection = "x";
 //          *title
 //          *move log
 
-
 const createPlayerBoard = (playerName, player) => {
     const board = document.createElement("div");
     board.id = `${playerName}-board`;
@@ -32,58 +31,9 @@ const createPlayerBoard = (playerName, player) => {
             square.id = `${playerName}-${j}${i}`;
             square.classList = "squares";
             square.onclick = () => {
-                if (gameStarted === false) {
-                    if (shipSelection === null)
-                        return alert("Please select a ship");
-                    playerOne.playerGameBoard.createShip(
-                        [j, i],
-                        shipPlacementDirection,
-                        shipSelection
-                    );
-                    putShipOnboard();
-                    removeShipOption(shipSelection);
-                } else {
-                    //fireShot()
-                   // console.log([j, i]);
-                    playerTwo.playerGameBoard.receiveAttack([j, i]);
-                    if (player.playerGameBoard.board[j][i] === "x") {
-                        square.style.backgroundColor = "pink";
-                        playerOne.randomShot();
-                        console.log(playerOne.playerGameBoard.attackList.length);
-                        let playerTwoShot =
-                            playerOne.playerGameBoard.attackList[
-                                playerOne.playerGameBoard.attackList.length - 1
-                            ];
-                            console.log(playerTwoShot);
-                            let playerOneSquare = document.getElementById(
-                                `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
-                            );
-                        if (playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]] === "x") {
-                            playerOneSquare.style.backgroundColor = "pink";
-                        } else {
-                            playerOneSquare.style.backgroundColor = "purple";
-                        }
-                    } else {
-                        square.style.backgroundColor = "purple";
-                        playerOne.randomShot();
-                        console.log(playerOne.playerGameBoard.attackList);
-                        let playerTwoShot =
-                            playerOne.playerGameBoard.attackList[
-                                playerOne.playerGameBoard.attackList.length - 1
-                            ];
-                            console.log(playerTwoShot)
-                            let playerOneSquare = document.getElementById(`player-one-${playerTwoShot[0]}${playerTwoShot[1]}`)
-                        if (
-                            playerOne.playerGameBoard.board[playerTwoShot[0]][
-                                playerTwoShot[1]
-                            ] === "x"
-                        ) {
-                            playerOneSquare.style.backgroundColor = "pink";
-                        } else {
-                            playerOneSquare.style.backgroundColor = "purple";
-                        }
-                    }
-                }
+                if (gameStarted === false) return isGameReadyToStart(j, i);
+                if (playerName === "player-one") return alert("Wrong board");
+                fireShots(j, i, player, square);
             };
             row.appendChild(square);
         }
@@ -91,7 +41,60 @@ const createPlayerBoard = (playerName, player) => {
     }
     return board;
 };
-
+const isGameReadyToStart = (x, y) => {
+    if (shipSelection === null) return alert("Please select a ship");
+    playerOne.playerGameBoard.createShip(
+        [x, y],
+        shipPlacementDirection,
+        shipSelection
+    );
+    putShipOnboard();
+    removeShipOption(shipSelection);
+};
+const fireShots = (x, y, player, square) => {
+    playerTwo.playerGameBoard.receiveAttack([x, y]);
+    if (player.playerGameBoard.board[x][y] === "x") {
+        square.style.backgroundColor = "pink";
+        playerOne.randomShot();
+        let playerTwoShot =
+            playerOne.playerGameBoard.attackList[
+                playerOne.playerGameBoard.attackList.length - 1
+            ];
+        let playerOneSquare = document.getElementById(
+            `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
+        );
+        if (
+            playerOne.playerGameBoard.board[playerTwoShot[0]][
+                playerTwoShot[1]
+            ] === "x"
+        ) {
+            playerOneSquare.style.backgroundColor = "pink";
+        } else {
+            playerOneSquare.style.backgroundColor = "purple";
+        }
+    } else {
+        square.style.backgroundColor = "purple";
+        playerOne.randomShot();
+        console.log(playerOne.playerGameBoard.attackList);
+        let playerTwoShot =
+            playerOne.playerGameBoard.attackList[
+                playerOne.playerGameBoard.attackList.length - 1
+            ];
+        console.log(playerTwoShot);
+        let playerOneSquare = document.getElementById(
+            `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
+        );
+        if (
+            playerOne.playerGameBoard.board[playerTwoShot[0]][
+                playerTwoShot[1]
+            ] === "x"
+        ) {
+            playerOneSquare.style.backgroundColor = "pink";
+        } else {
+            playerOneSquare.style.backgroundColor = "purple";
+        }
+    }
+};
 const createShipDiv = (shipName) => {
     const container = document.createElement("div");
     container.id = `${shipName}-option`;
@@ -160,11 +163,19 @@ const removeShipOption = (ship) => {
             gameStarted = true;
             container.removeChild(startButton);
             playerTwo.populateBoard();
+            disablePlayerOneBoardClick();
         };
         container.replaceChild(
             startButton,
             document.getElementById("direction-button")
         );
     }
+};
+const disablePlayerOneBoardClick = () => {
+    const playerBoard = document.getElementById("player-one-board");
+    playerBoard.onclick = (e) => {
+        e.stopPropagation();
+        console.log("do nothing");
+    };
 };
 document.body.appendChild(component());
