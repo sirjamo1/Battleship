@@ -22,11 +22,6 @@ body {
  margin-top: 200px;
  display: grid;
  justify-content: stretch;
-/*👉 display: flex;
- flex-direction: column;
- justify-content:space-evenly;
- align-content: stretch;👈*/
-
 }
 
 #player-two-container {
@@ -42,11 +37,6 @@ body {
  margin-top: 200px;
  display: grid;
  justify-content: stretch;
-/*👉 display: flex;
- flex-direction: column;
- justify-content:space-evenly;
- align-content: stretch;👈*/
-
 }
 .rows {
  background-color: aquamarine;
@@ -59,6 +49,9 @@ body {
  display: flex;
  justify-content: center;
 
+}
+.squares:hover {
+ background-color: chartreuse;
 }
 #ship-placement-container {
  position:absolute;

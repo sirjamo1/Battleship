@@ -7,6 +7,7 @@ const playerTwo = new Player();
 let gameStarted = false;
 let shipSelection = null;
 let shipPlacementDirection = "x";
+//let playerOneTurn = false
 const createPlayerBoard = (playerName, player) => {
     const board = document.createElement("div");
     board.id = `${playerName}-board`;
@@ -28,16 +29,46 @@ const createPlayerBoard = (playerName, player) => {
                     );
                     putShipOnboard();
                     removeShipOption(shipSelection);
-                    // console.log(playerOne.playerGameBoard.shipsNotDeployed)
-                    // console.log([j, i], shipPlacementDirection, shipSelection);
                 } else {
-                    console.log([j, i]);
-                    player.playerGameBoard.receiveAttack([j, i]);
+                    //fireShot()
+                   // console.log([j, i]);
+                    playerTwo.playerGameBoard.receiveAttack([j, i]);
                     if (player.playerGameBoard.board[j][i] === "x") {
                         square.style.backgroundColor = "pink";
+                        playerOne.randomShot();
+                        console.log(playerOne.playerGameBoard.attackList.length);
+                        let playerTwoShot =
+                            playerOne.playerGameBoard.attackList[
+                                playerOne.playerGameBoard.attackList.length - 1
+                            ];
+                            console.log(playerTwoShot);
+                            let playerOneSquare = document.getElementById(
+                                `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
+                            );
+                        if (playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]] === "x") {
+                            playerOneSquare.style.backgroundColor = "pink";
+                        } else {
+                            playerOneSquare.style.backgroundColor = "purple";
+                        }
                     } else {
                         square.style.backgroundColor = "purple";
-                        console.log(player.playerGameBoard.board[j][i]);
+                        playerOne.randomShot();
+                        console.log(playerOne.playerGameBoard.attackList);
+                        let playerTwoShot =
+                            playerOne.playerGameBoard.attackList[
+                                playerOne.playerGameBoard.attackList.length - 1
+                            ];
+                            console.log(playerTwoShot)
+                            let playerOneSquare = document.getElementById(`player-one-${playerTwoShot[0]}${playerTwoShot[1]}`)
+                        if (
+                            playerOne.playerGameBoard.board[playerTwoShot[0]][
+                                playerTwoShot[1]
+                            ] === "x"
+                        ) {
+                            playerOneSquare.style.backgroundColor = "pink";
+                        } else {
+                            playerOneSquare.style.backgroundColor = "purple";
+                        }
                     }
                 }
             };
@@ -47,6 +78,7 @@ const createPlayerBoard = (playerName, player) => {
     }
     return board;
 };
+
 const createShipDiv = (shipName) => {
     const container = document.createElement("div");
     container.id = `${shipName}-option`;
@@ -108,15 +140,18 @@ const removeShipOption = (ship) => {
     let element = document.getElementById(`${ship}-option`);
     container.removeChild(element);
     if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
-        const startButton = document.createElement('button');
-        startButton.id = 'start-button'
-        startButton.innerHTML = 'Start'
+        const startButton = document.createElement("button");
+        startButton.id = "start-button";
+        startButton.innerHTML = "Start";
         startButton.onclick = () => {
-            gameStarted = true
-            container.removeChild(startButton)
-            playerTwo.populateBoard()
-        }
-        container.replaceChild(startButton, document.getElementById("direction-button"));
+            gameStarted = true;
+            container.removeChild(startButton);
+            playerTwo.populateBoard();
+        };
+        container.replaceChild(
+            startButton,
+            document.getElementById("direction-button")
+        );
     }
 };
 document.body.appendChild(component());
