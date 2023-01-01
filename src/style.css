@@ -1,0 +1,89 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#main-container {
+    width: 100vw;
+    height: 100vh;
+    display:flex; 
+}
+
+#player-one-container {
+    background-color: blue;
+    flex: 1;
+    display: flex;
+    justify-content:space-evenly;
+}
+#player-one-board {
+ width: 400px;
+ height: 400px;
+ background-color: white;
+ margin-top: 200px;
+ display: grid;
+ justify-content: stretch;
+/*👉 display: flex;
+ flex-direction: column;
+ justify-content:space-evenly;
+ align-content: stretch;👈*/
+
+}
+
+#player-two-container {
+    background-color: red;
+    flex: 1;
+     display: flex;
+    justify-content:space-evenly;
+}
+#player-two-board {
+ width: 400px;
+ height: 400px;
+ background-color: white;
+ margin-top: 200px;
+ display: grid;
+ justify-content: stretch;
+/*👉 display: flex;
+ flex-direction: column;
+ justify-content:space-evenly;
+ align-content: stretch;👈*/
+
+}
+.rows {
+ background-color: aquamarine;
+ display: grid;
+ grid-auto-flow: column;
+
+}
+.squares {
+ border: 1px solid black;
+ display: flex;
+ justify-content: center;
+
+}
+#ship-placement-container {
+ position:absolute;
+ bottom: 5%;
+ display: grid;
+ gap: 6px;
+ text-align: center;
+
+}
+#ship-placement-container > * {
+ color: white;
+ background-color: red;
+ border-radius: 6px;
+ cursor: pointer;
+ width: 150px;
+ height: 20px;
+}
+#ship-placement-container > *:hover {
+ background-color: rgb(241, 109, 109);
+}
+#ship-placement-container > *:active {
+ background-color: rgb(100, 7, 7);
+}
+
+/*👉.hello {
+ color: red;
+ background: url('./assets/icons/allShips.png');
+}👈*/

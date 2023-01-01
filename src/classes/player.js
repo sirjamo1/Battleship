@@ -7,11 +7,6 @@ class Player {
         this.playerTurn = playerTurn;
     }
     populateBoard() {
-        // this.playerGameBoard.createShip([1, 3], "x", "carrier");
-        // this.playerGameBoard.createShip([2, 2], "x", "battleship");
-        // this.playerGameBoard.createShip([3, 4], "x", "cruiser");
-        // this.playerGameBoard.createShip([4, 4], "x", "submarine");
-        // this.playerGameBoard.createShip([5, 4], "x", "destroyer");
         this.playerGameBoard.createShip(
             this.randomCoord(),
             this.randomOrientation(),
