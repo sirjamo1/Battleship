@@ -2,17 +2,18 @@ import _ from "lodash";
 import "./style.css";
 //import Icon from './assets/icons/allShips.png'
 import { Player } from "./classes/player";
-const playerOne = new Player();
-const playerTwo = new Player();
+import { GameBoard } from "./classes/gameBoard";
+let playerOne = new Player();
+let playerTwo = new Player();
 let gameStarted = false;
 let shipSelection = null;
 let shipPlacementDirection = "x";
 //let playerOneTurn = false
 
 //NEED TO DO
-//          *stop computer taking turn if clicked square is clicked again
-//          *reset button
-//          *if computer hits ship, continue trying to hit around it
+//          * End the game
+//          *
+//          *
 //          *delay 0.3 sec before computer turn
 //          *add ships images over squares
 //          *fix x / y placement bug
@@ -52,49 +53,55 @@ const isGameReadyToStart = (x, y) => {
     removeShipOption(shipSelection);
 };
 const fireShots = (x, y, player, square) => {
-    if (square.style.backgroundColor === "pink" || square.style.backgroundColor === "purple") return alert("Try another square")
+    if (
+        playerTwo.playerGameBoard.board[x][y].slice(-3) === "HIT" ||
+        playerTwo.playerGameBoard.board[x][y] === "x"
+    )
+        return alert("Try another square");
+    //playerOne's shot
     playerTwo.playerGameBoard.receiveAttack([x, y]);
-    if (player.playerGameBoard.board[x][y] === "x") {
-        square.style.backgroundColor = "pink";
-        playerOne.randomShot();
+    player.playerGameBoard.board[x][y] === "x"
+        ? (square.style.backgroundColor = "pink")
+        : (square.style.backgroundColor = "purple");
+
+    //playerTwo's shot
+    setTimeout(() => {
+        playerOne.playerGameBoard.secondaryHeatSeeker =
+            playerOne.playerGameBoard.getSecondaryHeatSeeker();
+        // if heat seekers are available
+        if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
+            let heatSeekingCoord =
+                playerOne.playerGameBoard.heatSeekingList.shift();
+            playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
+            // if secondary heat seekers are available
+        } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
+            playerOne.playerGameBoard.secondaryHeatSeeker =
+                playerOne.playerGameBoard.getSecondaryHeatSeeker();
+
+            let secondaryHeatSeeker =
+                playerOne.playerGameBoard.secondaryHeatSeeker.pop();
+            // console.log(secondaryHeatSeeker, "sec heat");
+            playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
+            // take a random shot
+        } else {
+            playerOne.randomShot();
+        }
+        // get where shot hit
         let playerTwoShot =
             playerOne.playerGameBoard.attackList[
                 playerOne.playerGameBoard.attackList.length - 1
             ];
+        console.log(playerTwoShot, "<-- player twos shot");
+        // get corresponding div
         let playerOneSquare = document.getElementById(
             `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
         );
-        if (
-            playerOne.playerGameBoard.board[playerTwoShot[0]][
-                playerTwoShot[1]
-            ] === "x"
-        ) {
-            playerOneSquare.style.backgroundColor = "pink";
-        } else {
-            playerOneSquare.style.backgroundColor = "purple";
-        }
-    } else {
-        square.style.backgroundColor = "purple";
-        playerOne.randomShot();
-        console.log(playerOne.playerGameBoard.attackList);
-        let playerTwoShot =
-            playerOne.playerGameBoard.attackList[
-                playerOne.playerGameBoard.attackList.length - 1
-            ];
-        console.log(playerTwoShot);
-        let playerOneSquare = document.getElementById(
-            `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
-        );
-        if (
-            playerOne.playerGameBoard.board[playerTwoShot[0]][
-                playerTwoShot[1]
-            ] === "x"
-        ) {
-            playerOneSquare.style.backgroundColor = "pink";
-        } else {
-            playerOneSquare.style.backgroundColor = "purple";
-        }
-    }
+        // change div background color
+        playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]] ===
+        "x"
+            ? (playerOneSquare.style.backgroundColor = "pink")
+            : (playerOneSquare.style.backgroundColor = "purple");
+    }, 1000);
 };
 const createShipDiv = (shipName) => {
     const container = document.createElement("div");
@@ -106,7 +113,7 @@ const createShipDiv = (shipName) => {
 
     return container;
 };
-const shipPlacement = (playerName, player) => {
+const shipPlacement = () => {
     const placementContainer = document.createElement("div");
     placementContainer.id = "ship-placement-container";
     const directionButton = document.createElement("button");
@@ -116,6 +123,35 @@ const shipPlacement = (playerName, player) => {
         shipPlacementDirection = shipPlacementDirection === "x" ? "y" : "x";
         directionButton.innerHTML = shipPlacementDirection;
     };
+    const randomPlacement = document.createElement("button");
+    randomPlacement.id = "random-placement-button";
+    randomPlacement.innerHTML = "Random placement";
+    randomPlacement.onclick = () => {
+        playerOne.populateBoard();
+        playerOne.playerGameBoard.ships.forEach((ship) => {
+            ship.shipCoord.forEach((coord) => {
+                let square = document.getElementById(
+                    `player-one-${coord[0]}${coord[1]}`
+                );
+                square.style.backgroundColor = "grey";
+            });
+        });
+
+        placementContainer.removeChild(
+            document.getElementById("carrier-option")
+        );
+        placementContainer.removeChild(
+            document.getElementById("battleship-option")
+        );
+        placementContainer.removeChild(
+            document.getElementById("cruiser-option")
+        );
+        placementContainer.removeChild(
+            document.getElementById("submarine-option")
+        );
+        removeShipOption("destroyer");
+    };
+    placementContainer.appendChild(randomPlacement);
     placementContainer.appendChild(directionButton);
     placementContainer.appendChild(createShipDiv("carrier"));
     placementContainer.appendChild(createShipDiv("battleship"));
@@ -152,11 +188,40 @@ const putShipOnboard = () => {
         });
     }
 };
+const resetGame = () => {
+    playerOne = new Player();
+    playerTwo = new Player();
+    gameStarted = false;
+    shipSelection = null;
+    shipPlacementDirection = "x";
+    let playerOneContainer = document.getElementById("player-one-container");
+    let playerTwoContainer = document.getElementById("player-two-container");
+    let shipPlacementContainer = document.getElementById(
+        "ship-placement-container"
+    );
+    let playerOneBoard = document.getElementById("player-one-board");
+    let playerTwoBoard = document.getElementById("player-two-board");
+    playerOneContainer.replaceChild(
+        createPlayerBoard("player-one", playerOne),
+        playerOneBoard
+    );
+    playerTwoContainer.replaceChild(
+        createPlayerBoard("player-two", playerTwo),
+        playerTwoBoard
+    );
+    playerOneContainer.replaceChild(shipPlacement(), shipPlacementContainer);
+};
 const removeShipOption = (ship) => {
     let container = document.getElementById("ship-placement-container");
     let element = document.getElementById(`${ship}-option`);
     container.removeChild(element);
     if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
+        const resetButton = document.createElement("button");
+        resetButton.id = "reset-button";
+        resetButton.innerHTML = "Reset";
+        resetButton.onclick = () => {
+            resetGame();
+        };
         const startButton = document.createElement("button");
         startButton.id = "start-button";
         startButton.innerHTML = "Start";
@@ -169,6 +234,10 @@ const removeShipOption = (ship) => {
         container.replaceChild(
             startButton,
             document.getElementById("direction-button")
+        );
+        container.replaceChild(
+            resetButton,
+            document.getElementById("random-placement-button")
         );
     }
 };

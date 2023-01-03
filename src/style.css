@@ -80,3 +80,13 @@ body {
  color: red;
  background: url('./assets/icons/allShips.png');
 }👈*/
+#start-button {
+height: 30px;
+width: 100px;
+border-radius: 12px;
+}
+#reset-button {
+height: 30px;
+width: 100px;
+border-radius: 12px;
+}

@@ -58,30 +58,3 @@ class Player {
 
 export {  Player };
 
-//  populateBoard() {
-//     this.playerGameBoard.createShip(
-//         [0, 1],
-//         "x",
-//         Object.keys(this.playerGameBoard.shipList)[0]
-//     );
-//     this.playerGameBoard.createShip(
-//         [2, 1],
-//         "y",
-//         Object.keys(this.playerGameBoard.shipList)[1]
-//     );
-//     this.playerGameBoard.createShip(
-//         [4, 1],
-//         "x",
-//         Object.keys(this.playerGameBoard.shipList)[2]
-//     );
-//     this.playerGameBoard.createShip(
-//         [7, 6],
-//         "y",
-//         Object.keys(this.playerGameBoard.shipList)[3]
-//     );
-//     this.playerGameBoard.createShip(
-//         [8, 1],
-//         "x",
-//         Object.keys(this.playerGameBoard.shipList)[4]
-//     );
-// }
