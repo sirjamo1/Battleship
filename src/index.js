@@ -1,6 +1,11 @@
 import _ from "lodash";
 import "./style.css";
 //import Icon from './assets/icons/allShips.png'
+import battleship from './assets/icons/battleship.png'
+import carrier from "./assets/icons/carrier.png";
+import cruiser from "./assets/icons/cruiser.png";
+import destroyer from "./assets/icons/destroyer.png";
+import submarine from "./assets/icons/submarine.png";
 import { Player } from "./classes/player";
 import { GameBoard } from "./classes/gameBoard";
 let playerOne = new Player();
@@ -14,7 +19,7 @@ let shipPlacementDirection = "x";
 //          * End the game
 //          *
 //          *
-//          *delay 0.3 sec before computer turn
+//          *
 //          *add ships images over squares
 //          *fix x / y placement bug
 //          *move ship placement menu to middle of screen (maybe make half red/blue)
@@ -60,6 +65,8 @@ const fireShots = (x, y, player, square) => {
         return alert("Try another square");
     //playerOne's shot
     playerTwo.playerGameBoard.receiveAttack([x, y]);
+    if (playerTwo.playerGameBoard.shipsLeft === 0)
+        return alert("Player One Won!");
     player.playerGameBoard.board[x][y] === "x"
         ? (square.style.backgroundColor = "pink")
         : (square.style.backgroundColor = "purple");
@@ -101,17 +108,30 @@ const fireShots = (x, y, player, square) => {
         "x"
             ? (playerOneSquare.style.backgroundColor = "pink")
             : (playerOneSquare.style.backgroundColor = "purple");
+        if (playerOne.playerGameBoard.shipsLeft === 0)
+            return alert("Player Two Won!");
     }, 1000);
 };
-const createShipDiv = (shipName) => {
-    const container = document.createElement("div");
-    container.id = `${shipName}-option`;
-    container.innerHTML = `Place ${shipName}`;
-    container.onclick = () => {
+const createShipDiv = (shipName, shipImageName) => {
+
+    const shipImage = new Image()
+    shipImage.src = shipImageName;
+
+    shipImage.id = `${shipName}-option`;
+    //container.innerHTML = `Place ${shipName}`;
+    shipImage.onclick = () => {
         shipSelection = shipName;
     };
-
-    return container;
+    // const container = document.createElement("div");
+    // container.id = `${shipName}-option`;
+    // container.innerHTML = `Place ${shipName}`;
+    // container.onclick = () => {
+    //     shipSelection = shipName;
+    // };
+    // const myIcon = new Image();
+    // myIcon.src = Icon;
+    // mainContainer.appendChild(myIcon)
+    return shipImage;
 };
 const shipPlacement = () => {
     const placementContainer = document.createElement("div");
@@ -153,11 +173,11 @@ const shipPlacement = () => {
     };
     placementContainer.appendChild(randomPlacement);
     placementContainer.appendChild(directionButton);
-    placementContainer.appendChild(createShipDiv("carrier"));
-    placementContainer.appendChild(createShipDiv("battleship"));
-    placementContainer.appendChild(createShipDiv("cruiser"));
-    placementContainer.appendChild(createShipDiv("submarine"));
-    placementContainer.appendChild(createShipDiv("destroyer"));
+    placementContainer.appendChild(createShipDiv("carrier", carrier));
+    placementContainer.appendChild(createShipDiv("battleship", battleship));
+    placementContainer.appendChild(createShipDiv("cruiser", cruiser));
+    placementContainer.appendChild(createShipDiv("submarine", submarine));
+    placementContainer.appendChild(createShipDiv("destroyer", destroyer));
     return placementContainer;
 };
 function component() {

@@ -87,7 +87,6 @@ class GameBoard {
                     this.prevHit.push(coord);
                     this.confirmedHits.push(coord);
                     this.heatSeekingList = this.createHeatSeeker(coord);
-
                     if (this.ships[i].isSunk() === true) {
                         this.shipsLeft -= 1;
                         this.prevHit = coord;
