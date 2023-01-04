@@ -203,7 +203,6 @@ class GameBoard {
         for (let i = 0; i < shipLength; i += 1) {
             let x = dir === "x" ? coord[0] : coord[0] + i;
             let y = dir === "x" ? coord[1] + i : coord[1];
-            console.log(x, y)
             if (y > 9 || y < 0 || x > 9 || x < 0) {
                 return "Ship must be placed on board";
             } else if (this.board[x][y].length !== 0) {
@@ -212,7 +211,6 @@ class GameBoard {
                 coordArray.push([x, y]);
             }
         }
-        console.log( coord, coordArray)
         return coordArray;
     }
 }

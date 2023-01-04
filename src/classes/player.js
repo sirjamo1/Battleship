@@ -2,9 +2,10 @@ import { GameBoard } from "./gameBoard";
 //NEED TO:
 //       *
 class Player {
-    constructor(playerTurn = false) {
+    constructor(className) {
         this.playerGameBoard = new GameBoard();
-        this.playerTurn = playerTurn;
+      //  this.playerTurn = playerTurn;
+        this.className = className;
     }
     populateBoard() {
         this.playerGameBoard.createShip(
