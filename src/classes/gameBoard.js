@@ -55,7 +55,7 @@ class GameBoard {
         );
         let largestShipLength = 5;
         if (coordArray.length > largestShipLength) return coordArray;
-        const ship = new Ship(this.shipList[shipName].length, shipName);
+        const ship = new Ship(this.shipList[shipName].length, shipName, dir);
         ship.shipCoord = coordArray;
         this.ships.push(ship);
         coordArray.forEach((square) => {
@@ -201,16 +201,18 @@ class GameBoard {
     getCoordArray(coord, dir, shipLength) {
         let coordArray = [];
         for (let i = 0; i < shipLength; i += 1) {
-            let y = dir === "x" ? coord[0] : coord[0] + i;
-            let x = dir === "x" ? coord[1] + i : coord[1];
+            let x = dir === "x" ? coord[0] : coord[0] + i;
+            let y = dir === "x" ? coord[1] + i : coord[1];
+            console.log(x, y)
             if (y > 9 || y < 0 || x > 9 || x < 0) {
                 return "Ship must be placed on board";
-            } else if (this.board[y][x].length !== 0) {
-                return `${this.board[y][x]} occupies this space`;
+            } else if (this.board[x][y].length !== 0) {
+                return `${this.board[x][y]} occupies this space`;
             } else {
-                coordArray.push([y, x]);
+                coordArray.push([x, y]);
             }
         }
+        console.log( coord, coordArray)
         return coordArray;
     }
 }
