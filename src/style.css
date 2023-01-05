@@ -7,14 +7,16 @@ body {
     width: 100vw;
     height: 100vh;
     display: flex;
+    background: url("assets/backgrounds/sand-background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 #player-one-container {
-    background-color: blue;
+    /*👉 background-color: blue;👈*/
     flex: 1;
     display: flex;
     justify-content: space-evenly;
-    /*👉 background: url('assets/icons/carrier.png') 0 0;👈*/
 }
 #player-one-board {
     width: 400px;
@@ -23,10 +25,15 @@ body {
     margin-top: 200px;
     display: grid;
     justify-content: stretch;
+    background: url("assets/backgrounds/water-background-2.jpg");
+    background-size: cover;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
+    -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
+    -moz-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
 }
 
 #player-two-container {
-    background-color: red;
+    /*👉 background-color: red;👈*/
     flex: 1;
     display: flex;
     justify-content: space-evenly;
@@ -34,13 +41,20 @@ body {
 #player-two-board {
     width: 400px;
     height: 400px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.8);
     margin-top: 200px;
     display: grid;
     justify-content: stretch;
+    background: url("assets/backgrounds/water-background-2.jpg");
+    background-size: cover;
+}
+#player-two-board > * {
+    cursor: crosshair;
+    color: red;
+   
 }
 .rows {
-    background-color: aquamarine;
+    /*👉  background-color: aquamarine;👈*/
     display: grid;
     grid-auto-flow: column;
 }
@@ -62,16 +76,15 @@ body {
 }
 #ship-placement-container > * {
     color: white;
-    /*👉background-color: red;👈*/
     border-radius: 6px;
     cursor: pointer;
-    /*👉width: 150px;👈*/
     height: 25px;
     align-items: center;
 }
 #ship-placement-container > img {
     margin: auto;
     display: block;
+    /*👉cursor: move;👈*/
 }
 #ship-placement-container > button {
     background-color: red;

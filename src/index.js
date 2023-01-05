@@ -19,8 +19,6 @@ let shipPlacementDirection = "x";
 //          *
 //          *
 //          *
-//          *add ships images over squares
-//          *fix x / y placement bug  :IMPORTANT!
 //          *move ship placement menu to middle of screen (maybe make half red/blue)
 //          *title
 //          *move log
@@ -73,8 +71,8 @@ const fireShots = (x, y, player, square) => {
     if (playerTwo.playerGameBoard.shipsLeft === 0)
         return alert("Player One Won!");
     player.playerGameBoard.board[x][y] === "x"
-        ? (square.style.backgroundColor = "pink")
-        : ((square.style.backgroundColor = "purple"),
+        ? (square.style.backgroundColor = "rgba(255, 255, 255, 0.6)")
+        : ((square.style.backgroundColor = "rgba(255, 0, 0, 0.7)"),
           (square.childNodes[0].style.opacity = "1"));
 
     //playerTwo's shot
@@ -112,8 +110,9 @@ const fireShots = (x, y, player, square) => {
         // change div background color
         playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]] ===
         "x"
-            ? (playerOneSquare.style.backgroundColor = "pink")
-            : (playerOneSquare.style.backgroundColor = "purple");
+            ? (playerOneSquare.style.backgroundColor = "rgba(255, 255, 255, 0.6)")
+            : (playerOneSquare.style.backgroundColor =
+                  "rgba(255, 0, 0, 0.7)");
         if (playerOne.playerGameBoard.shipsLeft === 0)
             return alert("Player Two Won!");
     }, 1000);
@@ -219,18 +218,15 @@ const putShipOnboard = (player) => {
     for (let i = 0; i < player.playerGameBoard.ships.length; i += 1) {
         let num = 0;
         player.playerGameBoard.ships[i].shipCoord.forEach((coord) => {
-            console.log(player.playerGameBoard.ships[i].name, player);
             let shipName = player.playerGameBoard.ships[i].name;
             let dir = player.playerGameBoard.ships[i].direction;
-
             let square = document.getElementById(
                 `${player.className}-${coord[0]}${coord[1]}`
             );
-            console.log(square);
             const imageDiv = document.createElement("div");
             imageDiv.classList.add(`${shipName}-sprite-${num}`);
+            if (square.childNodes.length === 0) {
             square.appendChild(imageDiv);
-            // square.classList.add(`${shipName}-sprite-${num}`);
             num += 1;
             if (player.className === "player-two") {
                 imageDiv.style.opacity = "0";
@@ -238,12 +234,7 @@ const putShipOnboard = (player) => {
             if (dir === "y") {
                 imageDiv.style.transform = "rotate(90deg)";
             }
-            // if (dir === "y") {
-            //     square.style.transform = "rotate(90deg)";
-            //     if (player.className === 'player-two') {
-            //         square.style.hidden = true
-            //     }
-            // }
+        }
         });
     }
 };
