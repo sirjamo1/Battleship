@@ -10,8 +10,24 @@ body {
     background: url("assets/backgrounds/sand-background.jpg");
     background-size: cover;
     background-repeat: no-repeat;
+    text-align: center;
 }
+#title {
+    background-image: url("assets/backgrounds/metal-background.jpg");
+    background-repeat: repeat;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-top: 50px;
+    font-size: 120px;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: "Steelfish Rg", "helvetica neue", helvetica, arial, sans-serif;
+    font-weight: 800;
+    -webkit-font-smoothing: antialiased;
+    position: absolute;
 
+}
 #player-one-container {
     /*👉 background-color: blue;👈*/
     flex: 1;
@@ -47,11 +63,12 @@ body {
     justify-content: stretch;
     background: url("assets/backgrounds/water-background-2.jpg");
     background-size: cover;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
+    -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
+    -moz-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
 }
 #player-two-board > * {
     cursor: crosshair;
-    color: red;
-   
 }
 .rows {
     /*👉  background-color: aquamarine;👈*/
@@ -69,51 +86,78 @@ body {
 }
 #ship-placement-container {
     position: absolute;
-    bottom: 5%;
+    bottom: 8%;
     display: grid;
     gap: 6px;
     text-align: center;
+    align-self: center;
+    width: 100vw;
+    justify-content: center;
 }
 #ship-placement-container > * {
     color: white;
     border-radius: 6px;
-    cursor: pointer;
-    height: 25px;
     align-items: center;
+    justify-content: center;
 }
-#ship-placement-container > img {
+#ship-container {
+    margin-top: 10px;
+}
+#ship-container > img {
     margin: auto;
-    display: block;
-    /*👉cursor: move;👈*/
+    cursor: grabbing;
+    margin: 10px;
 }
 #ship-placement-container > button {
-    background-color: red;
+    /*👉   background-color: red;👈*/
+    background: url("assets/backgrounds/metal-background.jpg");
+    height: 20px;
+    width: 150px;
+    margin: auto;
+    cursor: pointer;
 }
-#ship-placement-container > *:hover {
-    background-color: rgb(241, 109, 109);
+#ship-container > img:hover {
+    /*👉  background-color: rgb(241, 109, 109);👈*/
 }
-#ship-placement-container > *:active {
+#ship-container > *:active {
     background-color: rgb(100, 7, 7);
 }
 
 #direction-button {
-    height: 20px;
 }
 #random-placement-button {
-    height: 20px;
 }
 #start-button {
-    height: 30px;
-    width: 100px;
+    height: 250px;
+    width: 400px;
     border-radius: 12px;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background: url("assets/backgrounds/metal-background.jpg");
+    opacity: 0.95;
+    color: white;
+    font-size: 4rem;
+    cursor: pointer;
 }
 #reset-button {
     height: 30px;
     width: 100px;
     border-radius: 12px;
+    cursor: pointer;
 }
-/*👉images👈*/
-/*👉square === 38 * 38px, border 1px👈*/
+#log-text-container {
+    background: black;
+    border-radius: 6px;
+    width: 70vw;
+    border: 2px solid rgb(120, 247, 51);
+}
+#log-text {
+    color: rgb(120, 247, 51);
+}
 #carrier-option {
     width: 190px;
     height: 38px;
@@ -239,8 +283,3 @@ body {
     width: 100%;
     height: 100%;
 }
-/*👉#player-one-00 {
- background: url('assets/icons/carrier.png') 0 0;
- background-size: 190px 38px;
-
-}👈*/
