@@ -2,16 +2,32 @@ import _ from "lodash";
 import "./style.css";
 //import Icon from './assets/icons/allShips.png'
 import battleship from "./assets/icons/battleship.png";
+import battleshipRotated from "./assets/icons/battleshipRotated.png";
 import carrier from "./assets/icons/carrier.png";
+import carrierRotated from "./assets/icons/carrierRotated.png";
 import cruiser from "./assets/icons/cruiser.png";
+import cruiserRotated from "./assets/icons/cruiserRotated.png";
 import destroyer from "./assets/icons/destroyer.png";
+import destroyerRotated from "./assets/icons/destroyerRotated.png";
 import submarine from "./assets/icons/submarine.png";
+import submarineRotated from "./assets/icons/submarineRotated.png";
 import { Player } from "./classes/player";
 let playerOne = new Player("player-one");
 let playerTwo = new Player("player-two");
 let gameStarted = false;
 let shipSelection = null;
 let shipPlacementDirection = "x";
+const carrierShipRotated = new Image();
+carrierShipRotated.src = carrierRotated;
+const destroyerShipRotated = new Image();
+destroyerShipRotated.src = destroyerRotated;
+const battleshipShipRotated = new Image();
+battleshipShipRotated.src = battleshipRotated;
+const submarineShipRotated = new Image();
+submarineShipRotated.src = submarineRotated;
+const cruiserShipRotated = new Image();
+cruiserShipRotated.src = cruiserRotated;
+
 //let playerOneTurn = false
 
 //NEED TO DO
@@ -19,8 +35,8 @@ let shipPlacementDirection = "x";
 //          *
 //          *
 //          *
-//          *move ship placement menu to middle of screen (maybe make half red/blue)
-//          *title
+//          *
+//          *
 //          *move log
 
 const createPlayerBoard = (playerName, player) => {
@@ -153,31 +169,49 @@ const checkSquare = (player, x, y) => {
     if (player.playerGameBoard.board[x][y].slice(-3) === "HIT") return "HIT!";
 };
 const createShipDiv = (shipName, shipImageName) => {
+    const shipImageParent = document.createElement("div");
+    shipImageParent.id = "ship-image-parent";
+    shipImageParent.draggable = true;
+    shipImageParent.ondragstart = (e) => {
+        shipSelection = shipName;
+        if (shipPlacementDirection === "y") {
+            console.log(shipName);
+            if (shipName === "carrier")
+                e.dataTransfer.setDragImage(carrierShipRotated, 10, 10);
+            if (shipName === "battleship")
+                e.dataTransfer.setDragImage(battleshipShipRotated, 10, 10);
+            if (shipName === "cruiser")
+                e.dataTransfer.setDragImage(cruiserShipRotated, 10, 10);
+            if (shipName === "submarine")
+                e.dataTransfer.setDragImage(submarineShipRotated, 10, 10);
+            if (shipName === "destroyer")
+                e.dataTransfer.setDragImage(destroyerShipRotated, 10, 10);
+        } else {
+            e.dataTransfer.setDragImage(shipImageParent, 10, 10);
+        }
+        drag(e);
+    };
     const shipImage = new Image();
     shipImage.src = shipImageName;
     shipImage.alt = shipName;
     shipImage.draggable = true;
-    shipImage.ondragstart = (e) => {
-        shipSelection = shipName;
-        //  shipImage.style.position = 'absolute'
-        // let shiftX = e.clientX
-        drag(e, shipImage);
-    };
-
+    // shipImage.ondragstart = (e) => {
+    //     shipSelection = shipName;
+    //     e.dataTransfer.setDragImage(shipImage, 10, 10);
+    //     drag(e, shipImage);
+    // };
     shipImage.id = `${shipName}-option`;
     shipImage.onclick = () => {
         shipSelection = shipName;
     };
-
-    return shipImage;
+    shipImageParent.appendChild(shipImage);
+    return shipImageParent;
 };
+
 const allowDrop = (e) => {
     e.preventDefault();
 };
-const drag = (e, shipImage) => {
-    // shipImage.style.left = "0px"
-    // shipImage.style.top = "0px";
-
+const drag = (e) => {
     e.dataTransfer.setData("img", e.target.id);
 };
 const drop = (e, x, y) => {
@@ -205,9 +239,9 @@ const shipPlacement = () => {
         let shipIcons = document.getElementsByTagName("img");
         for (let i = 0; i < shipIcons.length; i += 1) {
             if (shipPlacementDirection === "y") {
-                shipIcons[i].style.transform = "rotate(90deg)";
+                shipIcons[i].parentElement.style.transform = "rotate(90deg)";
             } else {
-                shipIcons[i].style.transform = "rotate(0deg)";
+                shipIcons[i].parentElement.style.transform = "rotate(0deg)";
             }
         }
     };
@@ -225,7 +259,6 @@ const shipPlacement = () => {
     };
     const shipContainer = document.createElement("div");
     shipContainer.id = "ship-container";
-
     placementContainer.appendChild(randomPlacement);
     placementContainer.appendChild(directionButton);
     placementContainer.appendChild(shipContainer);
@@ -240,24 +273,21 @@ const shipPlacement = () => {
 const createTitle = () => {
     const title = document.createElement("h1");
     title.id = "title";
-    title.innerHTML = "Battleships";
-    return title
+    title.innerHTML = "BATTLESHIPS";
+    return title;
 };
 function component() {
     const mainContainer = document.createElement("div");
-    
+
     mainContainer.id = "main-container";
     mainContainer.appendChild(createTitle());
     const playerOneContainer = document.createElement("div");
     playerOneContainer.id = "player-one-container";
     playerOneContainer.appendChild(createPlayerBoard("player-one", playerOne));
-    // playerOneContainer.appendChild(shipPlacement());
-
     mainContainer.appendChild(playerOneContainer);
     const playerTwoContainer = document.createElement("div");
     playerTwoContainer.id = "player-two-container";
     playerTwoContainer.appendChild(createPlayerBoard("player-two", playerTwo));
-
     mainContainer.appendChild(playerTwoContainer);
     mainContainer.appendChild(shipPlacement());
 
@@ -265,7 +295,6 @@ function component() {
 }
 
 const putShipOnboard = (player) => {
-    console.log(player.className);
     for (let i = 0; i < player.playerGameBoard.ships.length; i += 1) {
         let num = 0;
         player.playerGameBoard.ships[i].shipCoord.forEach((coord) => {
@@ -312,6 +341,9 @@ const resetGame = () => {
         playerTwoBoard
     );
     mainContainer.replaceChild(shipPlacement(), shipPlacementContainer);
+    if (mainContainer.contains(document.getElementById("start-button"))) {
+        mainContainer.removeChild(document.getElementById("start-button"));
+    }
 };
 const CreateMoveLogContainer = () => {
     const logTextContainer = document.createElement("div");
@@ -329,8 +361,8 @@ const removeShipOption = (ship) => {
     );
     let shipContainer = document.getElementById("ship-container");
     let element = document.getElementById(`${ship}-option`);
-    if (element.parentElement === shipContainer) {
-        shipContainer.removeChild(element);
+    if (element.parentElement.parentElement === shipContainer) {
+        shipContainer.removeChild(element.parentElement);
     }
     if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
         const resetButton = document.createElement("button");
@@ -358,6 +390,9 @@ const removeShipOption = (ship) => {
         shipPlacementContainer.replaceChild(
             resetButton,
             document.getElementById("random-placement-button")
+        );
+        shipPlacementContainer.removeChild(
+            document.getElementById("direction-button")
         );
     }
 };

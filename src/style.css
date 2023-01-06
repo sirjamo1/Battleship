@@ -2,7 +2,12 @@ body {
     padding: 0;
     margin: 0;
 }
-
+button {
+ background: url("assets/backgrounds/metal-background.jpg");
+ color: white;
+ cursor: pointer;
+ border-radius: 6px;
+}
 #main-container {
     width: 100vw;
     height: 100vh;
@@ -17,16 +22,16 @@ body {
     background-repeat: repeat;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-top: 50px;
+    margin-top: 40px;
     font-size: 120px;
     text-align: center;
     font-weight: bold;
-    text-transform: uppercase;
     font-family: "Steelfish Rg", "helvetica neue", helvetica, arial, sans-serif;
     font-weight: 800;
     -webkit-font-smoothing: antialiased;
     position: absolute;
-
+    text-shadow: 4px 4px 14px rgba(0, 0, 0, 0.6);
+    width: 100vw;
 }
 #player-one-container {
     /*👉 background-color: blue;👈*/
@@ -43,9 +48,9 @@ body {
     justify-content: stretch;
     background: url("assets/backgrounds/water-background-2.jpg");
     background-size: cover;
-    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
-    -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
-    -moz-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
+    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
+    -webkit-box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
+    -moz-box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
 }
 
 #player-two-container {
@@ -63,9 +68,9 @@ body {
     justify-content: stretch;
     background: url("assets/backgrounds/water-background-2.jpg");
     background-size: cover;
-    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
-    -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
-    -moz-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.75) inset;
+    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
+    -webkit-box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
+    -moz-box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
 }
 #player-two-board > * {
     cursor: crosshair;
@@ -86,46 +91,43 @@ body {
 }
 #ship-placement-container {
     position: absolute;
-    bottom: 8%;
+    bottom: 10%;
     display: grid;
-    gap: 6px;
     text-align: center;
     align-self: center;
     width: 100vw;
     justify-content: center;
-}
-#ship-placement-container > * {
-    color: white;
-    border-radius: 6px;
-    align-items: center;
-    justify-content: center;
+    border: 1px solid yellow;
 }
 #ship-container {
     margin-top: 10px;
-}
-#ship-container > img {
-    margin: auto;
-    cursor: grabbing;
-    margin: 10px;
-}
-#ship-placement-container > button {
-    /*👉   background-color: red;👈*/
-    background: url("assets/backgrounds/metal-background.jpg");
-    height: 20px;
-    width: 150px;
-    margin: auto;
-    cursor: pointer;
-}
-#ship-container > img:hover {
-    /*👉  background-color: rgb(241, 109, 109);👈*/
-}
-#ship-container > *:active {
-    background-color: rgb(100, 7, 7);
-}
-
-#direction-button {
+    border: 1px solid green;
+    display: flex;
+    gap: 10px;
 }
 #random-placement-button {
+ height: 20px;
+ width: 150px;
+ margin: auto ;
+}
+#direction-button {
+ height: 20px;
+ width: 40px;
+
+ margin: 10px auto ;
+}
+#ship-image-parent {
+   border: 1px solid red;
+}
+#ship-image-parent > img {
+    margin: 10px;
+    margin: auto;
+    cursor: grabbing;
+  
+}
+#rotated-ship-container {
+ position: absolute;
+ 
 }
 #start-button {
     height: 250px;
@@ -141,13 +143,13 @@ body {
     opacity: 0.95;
     color: white;
     font-size: 4rem;
-    cursor: pointer;
+  
 }
 #reset-button {
     height: 30px;
     width: 100px;
     border-radius: 12px;
-    cursor: pointer;
+     margin: 10px auto ;
 }
 #log-text-container {
     background: black;
@@ -157,6 +159,7 @@ body {
 }
 #log-text {
     color: rgb(120, 247, 51);
+    height: 60px;
 }
 #carrier-option {
     width: 190px;
