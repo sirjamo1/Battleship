@@ -128,42 +128,6 @@ class GameBoard {
                 ? heatSeekerArray.unshift(up)
                 : heatSeekerArray.push(up);
         }
-        // if (
-        //     this.prevHit[0] === left[0] &&
-        //     this.prevHit[1] === left[1] &&
-        //     this.seekerConditions(right) === true
-        // ) {
-        //     heatSeekerArray.unshift(right);
-        // } else if (this.seekerConditions(right) === true) {
-        //     heatSeekerArray.push(right);
-        // }
-        // if (
-        //     this.prevHit[0] === right[0] &&
-        //     this.prevHit[1] === right[1] &&
-        //     this.seekerConditions(left) === true
-        // ) {
-        //     heatSeekerArray.unshift(left);
-        // } else if (this.seekerConditions(left) === true) {
-        //     heatSeekerArray.push(left);
-        // }
-        // if (
-        //     this.prevHit[0] === up[0] &&
-        //     this.prevHit[1] === up[1] &&
-        //     this.seekerConditions(down) === true
-        // ) {
-        //     heatSeekerArray.unshift(down);
-        // } else if (this.seekerConditions(down) === true) {
-        //     heatSeekerArray.push(down);
-        // }
-        // if (
-        //     this.prevHit[0] === down[0] &&
-        //     this.prevHit[1] === down[1] &&
-        //     this.seekerConditions(up)
-        // ) {
-        //     heatSeekerArray.unshift(up);
-        // } else if (this.seekerConditions(up) === true) {
-        //     heatSeekerArray.push(up);
-        // }
         return heatSeekerArray;
     }
 

@@ -49,25 +49,35 @@ const createPlayerBoard = (playerName, player) => {
             const square = document.createElement("div");
             square.id = `${playerName}-${i}${j}`;
             square.classList = "squares";
-            square.ondrop = (e) => {
-                drop(e, i, j);
-            };
-            square.ondragover = (e) => {
-                allowDrop(e);
-            };
+            if (player === playerOne) {
+                square.ondrop = (e) => {
+                    drop(e, i, j);
+                };
+                square.ondragover = (e) => {
+                    allowDrop(e);
+                };
+            }
             square.onclick = () => {
                 if (gameStarted === false) return isGameReadyToStart(i, j);
-                if (playerName === "player-one") return alert("Wrong board");
+                if (playerName === "player-one")
+                    return logToText("Friendly Fire!!");
                 fireShots(i, j, player, square);
             };
             row.appendChild(square);
         }
         board.appendChild(row);
     }
+    if (player === playerOne) {
+        const dragShipText = document.createElement("h2");
+        dragShipText.id = "drag-ship-text";
+        dragShipText.innerHTML = "Drag ships here";
+        board.appendChild(dragShipText);
+    }
     return board;
 };
 const isGameReadyToStart = (x, y) => {
-    if (shipSelection === null) return alert("Please select a ship");
+    if (shipSelection === null)
+        return logToText("Please place all ships on the board");
     playerOne.playerGameBoard.createShip(
         [x, y],
         shipPlacementDirection,
@@ -84,9 +94,7 @@ const fireShots = (x, y, player, square) => {
         return logToText("Try another square");
     //playerOne's shot
     playerTwo.playerGameBoard.receiveAttack([x, y]);
-    logToText(
-        `Player one attacked x:${x} y:${y} ${checkSquare(playerTwo, x, y)}`
-    );
+    logToText(`Player one: ${checkSquare(playerTwo, x, y)}`);
     if (playerTwo.playerGameBoard.shipsLeft === 0)
         return logToText("Player One Won!");
     player.playerGameBoard.board[x][y] === "x"
@@ -104,14 +112,13 @@ const fireShots = (x, y, player, square) => {
                 playerOne.playerGameBoard.heatSeekingList.shift();
             playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
             logToText(
-                `Player Two attacked x:${heatSeekingCoord[0]} y:${
-                    heatSeekingCoord[1]
-                } ${checkSquare(
+                `Player Two: ${checkSquare(
                     playerOne,
                     heatSeekingCoord[0],
                     heatSeekingCoord[1]
                 )}`
             );
+
             // if secondary heat seekers are available
         } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
             playerOne.playerGameBoard.secondaryHeatSeeker =
@@ -122,26 +129,25 @@ const fireShots = (x, y, player, square) => {
             // console.log(secondaryHeatSeeker, "sec heat");
             playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
             logToText(
-                `Player Two attacked x:${secondaryHeatSeeker[0]} y:${
-                    secondaryHeatSeeker[1]
-                } ${checkSquare(
+                `Player Two: ${checkSquare(
                     playerOne,
                     secondaryHeatSeeker[0],
                     secondaryHeatSeeker[1]
                 )}`
             );
-
             // take a random shot
         } else {
             playerOne.randomShot();
-            console.log(playerOne);
+            //console.log(playerOne);
             let list = playerOne.playerGameBoard.attackList;
             let index = list.length - 1;
-            checkSquare(playerOne, list[index][0], list[index][1]);
+            // checkSquare(playerOne, list[index][0], list[index][1]);
             logToText(
-                `Player Two attacked x:${list[index][0]} y:${
+                `Player Two: ${checkSquare(
+                    playerOne,
+                    list[index][0],
                     list[index][1]
-                } ${checkSquare(playerOne, list[index][0], list[index][1])}`
+                )}`
             );
         }
         // get where shot hit
@@ -160,22 +166,36 @@ const fireShots = (x, y, player, square) => {
                   "rgba(255, 255, 255, 0.6)")
             : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
         if (playerOne.playerGameBoard.shipsLeft === 0)
-            return alert("Player Two Won!");
-    }, 1300);
+            return logToText("Player Two Won!");
+    }, 1400);
 };
 const checkSquare = (player, x, y) => {
-    console.log(player.playerGameBoard.board[x][y]);
-    if (player.playerGameBoard.board[x][y] === "x") return "MISS";
-    if (player.playerGameBoard.board[x][y].slice(-3) === "HIT") return "HIT!";
+    const str = player.playerGameBoard.board[x][y];
+    const firstWord = str.substring(0, str.indexOf(" "));
+    let message = "";
+    player.playerGameBoard.ships.forEach((ship) => {
+        if (ship.name == firstWord && ship.sunk === true) {
+            message += `Hit! <br> ${
+                firstWord[0].toUpperCase() + firstWord.slice(1)
+            } has been sunk!`;
+        }
+    });
+    if (message.length > 0) return message;
+    if (str === "x") return `MISSED!`;
+    if (str.slice(-3) === "HIT") return `HIT!`;
+};
+const logToText = (message) => {
+    document.getElementById("log-text").innerHTML = message;
 };
 const createShipDiv = (shipName, shipImageName) => {
-    const shipImageParent = document.createElement("div");
-    shipImageParent.id = "ship-image-parent";
-    shipImageParent.draggable = true;
-    shipImageParent.ondragstart = (e) => {
+    const shipImage = new Image();
+    shipImage.src = shipImageName;
+    shipImage.alt = shipName;
+    shipImage.draggable = true;
+    shipImage.ondragstart = (e) => {
+        removeDragShipsHereText();
         shipSelection = shipName;
         if (shipPlacementDirection === "y") {
-            console.log(shipName);
             if (shipName === "carrier")
                 e.dataTransfer.setDragImage(carrierShipRotated, 10, 10);
             if (shipName === "battleship")
@@ -187,32 +207,23 @@ const createShipDiv = (shipName, shipImageName) => {
             if (shipName === "destroyer")
                 e.dataTransfer.setDragImage(destroyerShipRotated, 10, 10);
         } else {
-            e.dataTransfer.setDragImage(shipImageParent, 10, 10);
+            e.dataTransfer.setDragImage(shipImage, 10, 10);
         }
-        drag(e);
     };
-    const shipImage = new Image();
-    shipImage.src = shipImageName;
-    shipImage.alt = shipName;
-    shipImage.draggable = true;
-    // shipImage.ondragstart = (e) => {
-    //     shipSelection = shipName;
-    //     e.dataTransfer.setDragImage(shipImage, 10, 10);
-    //     drag(e, shipImage);
-    // };
     shipImage.id = `${shipName}-option`;
     shipImage.onclick = () => {
         shipSelection = shipName;
+        removeDragShipsHereText();
     };
-    shipImageParent.appendChild(shipImage);
-    return shipImageParent;
+    return shipImage;
 };
-
+const removeDragShipsHereText = () => {
+    let playerOneBoard = document.getElementById("player-one-board");
+    let text = document.getElementById("drag-ship-text");
+    if (text !== null) playerOneBoard.removeChild(text);
+};
 const allowDrop = (e) => {
     e.preventDefault();
-};
-const drag = (e) => {
-    e.dataTransfer.setData("img", e.target.id);
 };
 const drop = (e, x, y) => {
     e.preventDefault();
@@ -222,11 +233,13 @@ const drop = (e, x, y) => {
         shipSelection
     );
     putShipOnboard(playerOne);
-    removeShipOption(shipSelection);
+    playerOne.playerGameBoard.ships.forEach((ship) => {
+        if (ship.name === shipSelection) {
+            removeShipOption(shipSelection);
+        }
+    });
 };
-const logToText = (message) => {
-    document.getElementById("log-text").innerHTML = message;
-};
+
 const shipPlacement = () => {
     const placementContainer = document.createElement("div");
     placementContainer.id = "ship-placement-container";
@@ -239,9 +252,9 @@ const shipPlacement = () => {
         let shipIcons = document.getElementsByTagName("img");
         for (let i = 0; i < shipIcons.length; i += 1) {
             if (shipPlacementDirection === "y") {
-                shipIcons[i].parentElement.style.transform = "rotate(90deg)";
+                shipIcons[i].style.transform = "rotate(90deg)";
             } else {
-                shipIcons[i].parentElement.style.transform = "rotate(0deg)";
+                shipIcons[i].style.transform = "rotate(0deg)";
             }
         }
     };
@@ -250,6 +263,7 @@ const shipPlacement = () => {
     randomPlacement.innerHTML = "Random placement";
     randomPlacement.onclick = () => {
         playerOne.populateBoard();
+        removeDragShipsHereText();
         putShipOnboard(playerOne);
         removeShipOption("carrier");
         removeShipOption("battleship");
@@ -278,7 +292,6 @@ const createTitle = () => {
 };
 function component() {
     const mainContainer = document.createElement("div");
-
     mainContainer.id = "main-container";
     mainContainer.appendChild(createTitle());
     const playerOneContainer = document.createElement("div");
@@ -361,8 +374,9 @@ const removeShipOption = (ship) => {
     );
     let shipContainer = document.getElementById("ship-container");
     let element = document.getElementById(`${ship}-option`);
-    if (element.parentElement.parentElement === shipContainer) {
-        shipContainer.removeChild(element.parentElement);
+    if (element.parentElement === shipContainer) {
+        console.log(ship);
+        shipContainer.removeChild(element);
     }
     if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
         const resetButton = document.createElement("button");
@@ -380,6 +394,7 @@ const removeShipOption = (ship) => {
             playerTwo.populateBoard();
             putShipOnboard(playerTwo);
             disablePlayerOneBoardClick();
+            logToText("Player one fire!");
         };
         mainContainer.appendChild(startButton);
         shipPlacementContainer.replaceChild(

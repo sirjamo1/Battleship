@@ -51,8 +51,31 @@ button {
     box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
     -webkit-box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
     -moz-box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.75) inset;
+    position: relative;
 }
 
+ 
+
+#drag-ship-text {
+ position:absolute;
+ top: 140px;
+ left: 65px;
+ font-size: 2.5rem;
+ color: white;
+text-shadow: 4px 4px 2px rgba(0,0,0,0.6);
+ animation: blink 2s linear 0s infinite normal;
+}
+@keyframes blink {
+ 0% {
+  opacity: 1;
+ }
+ 50% {
+  opacity: 0.3
+ }
+ 100% {
+  opacity: 1;
+ }
+}
 #player-two-container {
     /*👉 background-color: red;👈*/
     flex: 1;
@@ -97,11 +120,9 @@ button {
     align-self: center;
     width: 100vw;
     justify-content: center;
-    border: 1px solid yellow;
 }
 #ship-container {
     margin-top: 10px;
-    border: 1px solid green;
     display: flex;
     gap: 10px;
 }
@@ -113,13 +134,11 @@ button {
 #direction-button {
  height: 20px;
  width: 40px;
-
  margin: 10px auto ;
 }
 #ship-image-parent {
-   border: 1px solid red;
 }
-#ship-image-parent > img {
+#ship-container > img {
     margin: 10px;
     margin: auto;
     cursor: grabbing;
@@ -127,7 +146,7 @@ button {
 }
 #rotated-ship-container {
  position: absolute;
- 
+
 }
 #start-button {
     height: 250px;
@@ -140,10 +159,22 @@ button {
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     background: url("assets/backgrounds/metal-background.jpg");
-    opacity: 0.95;
+ /*👉   opacity: 0.95;👈*/
     color: white;
-    font-size: 4rem;
+    font-size: 4.5rem;
+     animation: startBlink 2.5s linear 0s infinite normal;
   
+}
+@keyframes startBlink {
+ 0% {
+  opacity: 1;
+ }
+ 50% {
+  opacity: 0.1
+ }
+ 100% {
+  opacity: 1;
+ }
 }
 #reset-button {
     height: 30px;
