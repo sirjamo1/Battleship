@@ -4,7 +4,7 @@ import { GameBoard } from "./gameBoard";
 class Player {
     constructor(className) {
         this.playerGameBoard = new GameBoard();
-      //  this.playerTurn = playerTurn;
+        //  this.playerTurn = playerTurn;
         this.className = className;
     }
     populateBoard() {
@@ -46,16 +46,20 @@ class Player {
     randomShot() {
         let coord = this.randomCoord();
         let attackList = this.playerGameBoard.attackList;
-        if (attackList.length === 0)
+        if (attackList.length === 0) {
+            console.log("random shot coord", coord);
             return this.playerGameBoard.receiveAttack(coord);
+        }
         for (let i = 0; i < attackList.length; i += 1) {
-            if (coord === attackList[i]) {
+            if (
+                this.playerGameBoard.isCoordEqual(coord, attackList[i]) === true
+            ) {
                 return this.randomShot();
             }
         }
+        console.log("random shot coord", coord);
         this.playerGameBoard.receiveAttack(coord);
     }
 }
 
-export {  Player };
-
+export { Player };

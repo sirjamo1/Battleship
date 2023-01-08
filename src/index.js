@@ -47,21 +47,22 @@ const createPlayerBoard = (playerName, player) => {
         row.classList = "rows";
         for (let j = 0; j < player.playerGameBoard.board[i].length; j += 1) {
             const square = document.createElement("div");
-            square.id = `${playerName}-${i}${j}`;
+            square.id = `${playerName}-${j}${i}`;
             square.classList = "squares";
             if (player === playerOne) {
                 square.ondrop = (e) => {
-                    drop(e, i, j);
+                    drop(e, j, i);
                 };
                 square.ondragover = (e) => {
                     allowDrop(e);
                 };
             }
             square.onclick = () => {
-                if (gameStarted === false) return isGameReadyToStart(i, j);
+                console.log(square.id);
+                if (gameStarted === false) return isGameReadyToStart(j, i);
                 if (playerName === "player-one")
                     return logToText("Friendly Fire!!");
-                fireShots(i, j, player, square);
+                fireShots(j, i, player, square);
             };
             row.appendChild(square);
         }
@@ -97,20 +98,24 @@ const fireShots = (x, y, player, square) => {
     logToText(`Player one: ${checkSquare(playerTwo, x, y)}`);
     if (playerTwo.playerGameBoard.shipsLeft === 0)
         return logToText("Player One Won!");
-    player.playerGameBoard.board[x][y] === "x"
-        ? (square.style.backgroundColor = "rgba(255, 255, 255, 0.6)")
-        : ((square.style.backgroundColor = "rgba(255, 0, 0, 0.7)"),
-          (square.childNodes[0].style.opacity = "1"));
+    if (player.playerGameBoard.board[x][y] === "x") {
+        square.style.backgroundColor = "rgba(255, 255, 255, 0.6)";
+    } else {
+        square.style.backgroundColor = "rgba(255, 0, 0, 0.7)";
+        //  console.log(player.playerGameBoard.board[x][y]);
+        //(square.childNodes[0].style.opacity = "1");
+    }
 
     //playerTwo's shot
     setTimeout(() => {
-        playerOne.playerGameBoard.secondaryHeatSeeker =
-            playerOne.playerGameBoard.getSecondaryHeatSeeker();
+        // playerOne.playerGameBoard.secondaryHeatSeeker =
+        //     playerOne.playerGameBoard.getSecondaryHeatSeeker();
         // if heat seekers are available
         if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
             let heatSeekingCoord =
                 playerOne.playerGameBoard.heatSeekingList.shift();
             playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
+            console.log("heat seeker ran", heatSeekingCoord);
             logToText(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -121,13 +126,14 @@ const fireShots = (x, y, player, square) => {
 
             // if secondary heat seekers are available
         } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
-            playerOne.playerGameBoard.secondaryHeatSeeker =
-                playerOne.playerGameBoard.getSecondaryHeatSeeker();
+            // playerOne.playerGameBoard.secondaryHeatSeeker =
+            //     playerOne.playerGameBoard.getSecondaryHeatSeeker();
 
             let secondaryHeatSeeker =
                 playerOne.playerGameBoard.secondaryHeatSeeker.pop();
             // console.log(secondaryHeatSeeker, "sec heat");
             playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
+            console.log(" second heat seeker ran", secondaryHeatSeeker);
             logToText(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -138,6 +144,7 @@ const fireShots = (x, y, player, square) => {
             // take a random shot
         } else {
             playerOne.randomShot();
+            console.log("random shot ran");
             //console.log(playerOne);
             let list = playerOne.playerGameBoard.attackList;
             let index = list.length - 1;
@@ -178,6 +185,14 @@ const checkSquare = (player, x, y) => {
             message += `Hit! <br> ${
                 firstWord[0].toUpperCase() + firstWord.slice(1)
             } has been sunk!`;
+            ship.shipCoord.forEach((coord) => {
+                let square = document.getElementById(
+                    `${player.className}-${coord[0]}${coord[1]}`
+                );
+                square.childNodes[0].style.opacity = "1";
+            });
+            player.playerGameBoard.clearHeatSeekingList();
+            player.playerGameBoard.clearSecondaryHeatSeekingList();
         }
     });
     if (message.length > 0) return message;
