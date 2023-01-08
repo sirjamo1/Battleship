@@ -1,6 +1,5 @@
 import _ from "lodash";
 import "./style.css";
-//import Icon from './assets/icons/allShips.png'
 import battleship from "./assets/icons/battleship.png";
 import battleshipRotated from "./assets/icons/battleshipRotated.png";
 import carrier from "./assets/icons/carrier.png";
@@ -11,12 +10,18 @@ import destroyer from "./assets/icons/destroyer.png";
 import destroyerRotated from "./assets/icons/destroyerRotated.png";
 import submarine from "./assets/icons/submarine.png";
 import submarineRotated from "./assets/icons/submarineRotated.png";
+import audio from "./assets/icons/audio.png";
+import hit from "./assets/sounds/hit.wav";
+import miss from "./assets/sounds/miss.wav";
+import sunk from "./assets/sounds/sunk.wav";
+import deployment from "./assets/sounds/deployment.wav";
 import { Player } from "./classes/player";
 let playerOne = new Player("player-one");
 let playerTwo = new Player("player-two");
 let gameStarted = false;
 let shipSelection = null;
 let shipPlacementDirection = "x";
+let audioOn = true;
 const carrierShipRotated = new Image();
 carrierShipRotated.src = carrierRotated;
 const destroyerShipRotated = new Image();
@@ -27,17 +32,10 @@ const submarineShipRotated = new Image();
 submarineShipRotated.src = submarineRotated;
 const cruiserShipRotated = new Image();
 cruiserShipRotated.src = cruiserRotated;
-
-//let playerOneTurn = false
-
-//NEED TO DO
-//          * End the game
-//          *
-//          *
-//          *
-//          *
-//          *
-//          *move log
+const deploymentSound = new Audio(deployment);
+const hitSound = new Audio(hit);
+const missSound = new Audio(miss);
+const sunkSound = new Audio(sunk);
 
 const createPlayerBoard = (playerName, player) => {
     const board = document.createElement("div");
@@ -102,20 +100,15 @@ const fireShots = (x, y, player, square) => {
         square.style.backgroundColor = "rgba(255, 255, 255, 0.6)";
     } else {
         square.style.backgroundColor = "rgba(255, 0, 0, 0.7)";
-        //  console.log(player.playerGameBoard.board[x][y]);
-        //(square.childNodes[0].style.opacity = "1");
     }
-
+    const playerTwoBoard = document.getElementById("player-two-board");
+    playerTwoBoard.style.pointerEvents = "none";
     //playerTwo's shot
     setTimeout(() => {
-        // playerOne.playerGameBoard.secondaryHeatSeeker =
-        //     playerOne.playerGameBoard.getSecondaryHeatSeeker();
-        // if heat seekers are available
         if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
             let heatSeekingCoord =
                 playerOne.playerGameBoard.heatSeekingList.shift();
             playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
-            console.log("heat seeker ran", heatSeekingCoord);
             logToText(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -123,17 +116,10 @@ const fireShots = (x, y, player, square) => {
                     heatSeekingCoord[1]
                 )}`
             );
-
-            // if secondary heat seekers are available
         } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
-            // playerOne.playerGameBoard.secondaryHeatSeeker =
-            //     playerOne.playerGameBoard.getSecondaryHeatSeeker();
-
             let secondaryHeatSeeker =
                 playerOne.playerGameBoard.secondaryHeatSeeker.pop();
-            // console.log(secondaryHeatSeeker, "sec heat");
             playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
-            console.log(" second heat seeker ran", secondaryHeatSeeker);
             logToText(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -141,14 +127,10 @@ const fireShots = (x, y, player, square) => {
                     secondaryHeatSeeker[1]
                 )}`
             );
-            // take a random shot
         } else {
             playerOne.randomShot();
-            console.log("random shot ran");
-            //console.log(playerOne);
             let list = playerOne.playerGameBoard.attackList;
             let index = list.length - 1;
-            // checkSquare(playerOne, list[index][0], list[index][1]);
             logToText(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -166,6 +148,7 @@ const fireShots = (x, y, player, square) => {
         let playerOneSquare = document.getElementById(
             `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
         );
+        playerTwoBoard.style.pointerEvents = "all";
         // change div background color
         playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]] ===
         "x"
@@ -174,7 +157,7 @@ const fireShots = (x, y, player, square) => {
             : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
         if (playerOne.playerGameBoard.shipsLeft === 0)
             return logToText("Player Two Won!");
-    }, 1400);
+    }, 1700);
 };
 const checkSquare = (player, x, y) => {
     const str = player.playerGameBoard.board[x][y];
@@ -182,6 +165,7 @@ const checkSquare = (player, x, y) => {
     let message = "";
     player.playerGameBoard.ships.forEach((ship) => {
         if (ship.name == firstWord && ship.sunk === true) {
+           if (audioOn) sunkSound.play();
             message += `Hit! <br> ${
                 firstWord[0].toUpperCase() + firstWord.slice(1)
             } has been sunk!`;
@@ -196,8 +180,15 @@ const checkSquare = (player, x, y) => {
         }
     });
     if (message.length > 0) return message;
-    if (str === "x") return `MISSED!`;
-    if (str.slice(-3) === "HIT") return `HIT!`;
+    if (str === "x") {
+        console.log(audioOn, audioOn === true)
+        if (audioOn) missSound.play();
+        return `MISSED!`;
+    }
+    if (str.slice(-3) === "HIT") {
+        if (audioOn) hitSound.play();
+        return `HIT!`;
+    }
 };
 const logToText = (message) => {
     document.getElementById("log-text").innerHTML = message;
@@ -248,6 +239,7 @@ const drop = (e, x, y) => {
         shipSelection
     );
     putShipOnboard(playerOne);
+
     playerOne.playerGameBoard.ships.forEach((ship) => {
         if (ship.name === shipSelection) {
             removeShipOption(shipSelection);
@@ -285,6 +277,7 @@ const shipPlacement = () => {
         removeShipOption("cruiser");
         removeShipOption("submarine");
         removeShipOption("destroyer");
+       if (audioOn) deploymentSound.play();
     };
     const shipContainer = document.createElement("div");
     shipContainer.id = "ship-container";
@@ -305,10 +298,23 @@ const createTitle = () => {
     title.innerHTML = "BATTLESHIPS";
     return title;
 };
+const createAudioButton = () => {
+    const audioButton = new Image();
+    audioButton.src = audio;
+    audioButton.id = "audio-button";
+    audioButton.onclick = () => {
+        audioOn = !audioOn;
+        audioButton.style.backgroundColor =
+            audioOn === false ? "rgba(255, 0, 0, 0.6" : "rgba(0, 128, 0, 0.6)";
+    };
+    return audioButton;
+};
+
 function component() {
     const mainContainer = document.createElement("div");
     mainContainer.id = "main-container";
     mainContainer.appendChild(createTitle());
+    mainContainer.appendChild(createAudioButton());
     const playerOneContainer = document.createElement("div");
     playerOneContainer.id = "player-one-container";
     playerOneContainer.appendChild(createPlayerBoard("player-one", playerOne));
@@ -390,8 +396,8 @@ const removeShipOption = (ship) => {
     let shipContainer = document.getElementById("ship-container");
     let element = document.getElementById(`${ship}-option`);
     if (element.parentElement === shipContainer) {
-        console.log(ship);
         shipContainer.removeChild(element);
+       if (audioOn) deploymentSound.play();
     }
     if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
         const resetButton = document.createElement("button");
