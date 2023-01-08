@@ -1,9 +1,6 @@
 # Battleship
 
-
-
 battleships from https://www.pngwing.com/en/free-png-bsgsf/download
-
 
 backgrounds
 sand Photo by Aleksandar Pasaric: https://www.pexels.com/photo/wavy-patterns-on-the-desert-sand-1527934/
@@ -14,5 +11,6 @@ metal backgreound from https://pixabay.com/photos/surface-rivet-metal-facade-275
 
 <!-- cursor from pngwing.com -->
 
+sounds from https://www.freesound.org
 
-sounds from www.freesound.org
+favicon from https://www.flaticon.com/
