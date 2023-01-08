@@ -1,10 +1,8 @@
 import { GameBoard } from "./gameBoard";
-//NEED TO:
-//       *
+
 class Player {
     constructor(className) {
         this.playerGameBoard = new GameBoard();
-        //  this.playerTurn = playerTurn;
         this.className = className;
     }
     populateBoard() {
@@ -47,7 +45,6 @@ class Player {
         let coord = this.randomCoord();
         let attackList = this.playerGameBoard.attackList;
         if (attackList.length === 0) {
-            console.log("random shot coord", coord);
             return this.playerGameBoard.receiveAttack(coord);
         }
         for (let i = 0; i < attackList.length; i += 1) {
@@ -57,7 +54,6 @@ class Player {
                 return this.randomShot();
             }
         }
-        console.log("random shot coord", coord);
         this.playerGameBoard.receiveAttack(coord);
     }
 }

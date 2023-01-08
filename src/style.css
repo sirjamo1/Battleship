@@ -3,10 +3,10 @@ body {
     margin: 0;
 }
 button {
- background: url("assets/backgrounds/metal-background.jpg");
- color: white;
- cursor: pointer;
- border-radius: 6px;
+    background: url("assets/backgrounds/metal-background.jpg");
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
 }
 #main-container {
     width: 100vw;
@@ -34,7 +34,6 @@ button {
     width: 100vw;
 }
 #player-one-container {
-    /*👉 background-color: blue;👈*/
     flex: 1;
     display: flex;
     justify-content: space-evenly;
@@ -54,38 +53,41 @@ button {
     position: relative;
 }
 
- 
-
 #drag-ship-text {
- position:absolute;
- top: 140px;
- left: 65px;
- font-size: 2.5rem;
- color: white;
-text-shadow: 4px 4px 2px rgba(0,0,0,0.6);
- animation: blink 2s linear 0s infinite normal;
+    position: absolute;
+    top: 140px;
+    left: 65px;
+    font-size: 2.5rem;
+    color: white;
+    text-shadow: 4px 4px 2px rgba(0, 0, 0, 0.6);
+    animation: blink 2s linear 0s infinite normal;
 }
 @keyframes blink {
- 0% {
-  opacity: 1;
- }
- 50% {
-  opacity: 0.3
- }
- 100% {
-  opacity: 1;
- }
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 #audio-button {
- border-radius: 50%;
- width: 40px;
- background-color: rgba(0, 128, 0, 0.6);
- position:absolute;
- top: 20px;
- right: 20px;
+    border-radius: 50%;
+    width: 40px;
+    background-color: rgba(0, 128, 0, 0.6);
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}
+#audio-button:active {
+box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.75) inset;
+-webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.75) inset;
+-moz-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.75) inset;
 }
 #player-two-container {
-    /*👉 background-color: red;👈*/
     flex: 1;
     display: flex;
     justify-content: space-evenly;
@@ -107,13 +109,11 @@ text-shadow: 4px 4px 2px rgba(0,0,0,0.6);
     cursor: crosshair;
 }
 .rows {
-    /*👉  background-color: aquamarine;👈*/
     display: grid;
     grid-auto-flow: column;
 }
 .squares {
     border: 1px solid black;
-    /*👉 display: flex;👈*/
     justify-content: center;
     position: relative;
 }
@@ -135,26 +135,22 @@ text-shadow: 4px 4px 2px rgba(0,0,0,0.6);
     gap: 10px;
 }
 #random-placement-button {
- height: 20px;
- width: 150px;
- margin: auto ;
+    height: 20px;
+    width: 150px;
+    margin: auto;
 }
 #direction-button {
- height: 20px;
- width: 40px;
- margin: 10px auto ;
-}
-#ship-image-parent {
+    height: 20px;
+    width: 40px;
+    margin: 10px auto;
 }
 #ship-container > img {
     margin: 10px;
     margin: auto;
     cursor: grabbing;
-  
 }
 #rotated-ship-container {
- position: absolute;
-
+    position: absolute;
 }
 #start-button {
     height: 250px;
@@ -167,28 +163,30 @@ text-shadow: 4px 4px 2px rgba(0,0,0,0.6);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     background: url("assets/backgrounds/metal-background.jpg");
- /*👉   opacity: 0.95;👈*/
     color: white;
     font-size: 4.5rem;
-     animation: startBlink 2.5s linear 0s infinite normal;
-  
+    animation: startBlink 2.5s linear 0s infinite normal;
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
 }
 @keyframes startBlink {
- 0% {
-  opacity: 1;
- }
- 50% {
-  opacity: 0.1
- }
- 100% {
-  opacity: 1;
- }
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.1;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 #reset-button {
     height: 30px;
     width: 100px;
     border-radius: 12px;
-     margin: 10px auto ;
+    margin: 10px auto;
 }
 #log-text-container {
     background: black;
