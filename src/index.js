@@ -271,11 +271,6 @@ const createShipPlacementContainer = () => {
         removeDragShipsHereText();
         putShipOnboard(playerOne);
         removeShipOption("carrier");
-        removeShipOption("battleship");
-        removeShipOption("cruiser");
-        removeShipOption("submarine");
-        removeShipOption("destroyer");
-        if (audioOn) deploymentSound.play();
     };
     const shipContainer = document.createElement("div");
     shipContainer.id = "ship-container";
@@ -395,10 +390,12 @@ const removeShipOption = (ship) => {
         "ship-placement-container"
     );
     let shipContainer = document.getElementById("ship-container");
-    let element = document.getElementById(`${ship}-option`);
-    if (element.parentElement === shipContainer) {
-        shipContainer.removeChild(element);
-        if (audioOn) deploymentSound.play();
+    let shipOption = document.getElementById(`${ship}-option`);
+    if (shipOption?.parentElement) {
+        if (shipOption.parentElement === shipContainer) {
+            shipContainer.removeChild(shipOption);
+            if (audioOn) deploymentSound.play();
+        }
     }
     if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
         const resetButton = document.createElement("button");
@@ -423,7 +420,6 @@ const removeShipOption = (ship) => {
             CreateMoveLogContainer(),
             shipContainer
         );
-
         shipPlacementContainer.replaceChild(
             resetButton,
             document.getElementById("random-placement-button")
