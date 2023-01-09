@@ -74,6 +74,7 @@ const createPlayerBoard = (playerName, player) => {
     }
     return board;
 };
+
 const isGameReadyToStart = (x, y) => {
     if (shipSelection === null)
         return logTextToScreen("Please place all ships on the board");
@@ -85,8 +86,59 @@ const isGameReadyToStart = (x, y) => {
     putShipOnboard(playerOne);
     removeShipOption(shipSelection);
 };
+
+const sonarConditions = (player) => {
+    let sonarId =
+        player.className === "player-one"
+            ? "player-two-sonar"
+            : "player-one-sonar";
+    const sonarContainer = document.getElementById(sonarId);
+    if (player.playerGameBoard.isSonarReady() === true) {
+        console.log("true");
+        sonarContainer.style.background = "rgb(120, 247, 51)";
+        sonarContainer.style.animation = "blink 1.5s linear 0s infinite normal";
+        if (sonarContainer.id === "player-one-sonar") {
+            sonarContainer.style.cursor = "pointer";
+            sonarContainer.onclick = () => {
+                sonarAnimation();
+                player.playerGameBoard.resetSonar();
+                sonarContainer.style.removeProperty("animation");
+                sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
+            };
+        }
+    } else {
+        sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
+    }
+};
+const sonarAnimation = () => {
+    const array = playerTwo.playerGameBoard.remainingShipCoords;
+    let playerBoard = document.getElementById("player-two-board");
+
+    playerBoard.childNodes.forEach((row) => {
+        row.style.animation = "sonarBoardFlash 1.1s linear 0s  normal";
+    });
+
+    array.forEach((coord) => {
+        document.getElementById(
+            `player-two-${coord[0]}${coord[1]}`
+        ).childNodes[0].style.animation =
+            "sonarShipFlash 1.1s linear 0s  normal";
+    });
+    setTimeout(() => {
+        playerBoard.childNodes.forEach((row) => {
+            row.style.removeProperty("animation");
+        });
+        array.forEach((coord) => {
+            document
+                .getElementById(`player-two-${coord[0]}${coord[1]}`)
+                .childNodes[0].style.removeProperty("animation");
+        });
+    }, 1100);
+};
+
 const fireShots = (x, y, player, square) => {
     //playerOne's shot
+
     if (
         playerTwo.playerGameBoard.board[x][y].slice(-3) === "HIT" ||
         playerTwo.playerGameBoard.board[x][y] === "x"
@@ -102,8 +154,11 @@ const fireShots = (x, y, player, square) => {
     } else {
         square.style.backgroundColor = "rgba(255, 0, 0, 0.7)";
     }
+
     const playerTwoBoard = document.getElementById("player-two-board");
     playerTwoBoard.style.pointerEvents = "none";
+    console.log(playerTwo.playerGameBoard.sonar);
+    sonarConditions(playerTwo);
     //playerTwo's shot
     setTimeout(() => {
         if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
@@ -152,6 +207,8 @@ const fireShots = (x, y, player, square) => {
             ? (playerOneSquare.style.backgroundColor =
                   "rgba(255, 255, 255, 0.6)")
             : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
+        sonarConditions(playerOne);
+        console.log(playerOne.playerGameBoard.sonar);
         if (playerOne.playerGameBoard.shipsLeft === 0)
             return logTextToScreen("Player Two Won!");
         playerTwoBoard.style.pointerEvents = "all";
@@ -377,6 +434,14 @@ const resetGame = () => {
 };
 const CreateMoveLogContainer = () => {
     const logTextContainer = document.createElement("div");
+    const playerOneSonar = document.createElement("div");
+    playerOneSonar.id = "player-one-sonar";
+    playerOneSonar.innerHTML = "SONAR";
+    logTextContainer.appendChild(playerOneSonar);
+    const playerTwoSonar = document.createElement("div");
+    playerTwoSonar.id = "player-two-sonar";
+    playerTwoSonar.innerHTML = "SONAR";
+    logTextContainer.appendChild(playerTwoSonar);
     logTextContainer.id = "log-text-container";
     const logText = document.createElement("h3");
     logText.id = "log-text";

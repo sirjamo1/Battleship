@@ -32,6 +32,8 @@ class GameBoard {
         this.heatSeekingList = [];
         this.secondaryHeatSeeker = [];
         this.prevHit = [];
+        this.remainingShipCoords = [];
+        this.sonar = 0;
         this.createBoard();
     }
 
@@ -58,25 +60,49 @@ class GameBoard {
         ship.shipCoord = coordArray;
         this.ships.push(ship);
         coordArray.forEach((square) => {
+            this.remainingShipCoords.push(square);
             this.board[square[0]][square[1]] = shipName;
         });
         this.shipList[shipName].quantity -= 1;
         this.shipsNotDeployed -= 1;
     }
+    addToSonar(num) {
+        if (this.sonar < 100) this.sonar += num;
+    }
+    resetSonar() {
+        this.sonar = 0
+    }
+    isSonarReady() {
+        return this.sonar >= 100 ? true : false;
+    }
+    sonarAttack() {
+        
+    }
     receiveAttack(coord) {
-        //this.secondaryHeatSeeker = this.getSecondaryHeatSeeker();
         if (this.board[coord[0]][coord[1]].length === 0) {
             this.board[coord[0]][coord[1]] = "x";
+            this.addToSonar(50);
             return this.attackList.push(coord);
         } else if (this.board[coord[0]][coord[1]] === "x") {
             return `${coord} has already been tried`;
         } else if (this.board[coord[0]][coord[1]].slice(-3) === "HIT") {
             let shipStrLength = this.board[coord[0]][coord[1]].length;
+
             return `${this.board[coord[0]][coord[1]].slice(
                 0,
                 shipStrLength - 4
             )} has already been hit`;
         } else {
+            this.addToSonar(50);
+            console.log(coord, this.remainingShipCoords);
+            for (let i = 0; i < this.remainingShipCoords.length; i += 1) {
+                if (
+                    this.isCoordEqual(coord, this.remainingShipCoords[i]) ===
+                    true
+                ) {
+                    this.remainingShipCoords.splice(i, 1);
+                }
+            }
             for (let i = 0; i < this.ships.length; i += 1) {
                 if (this.ships[i].name === this.board[coord[0]][coord[1]]) {
                     this.ships[i].hit();
