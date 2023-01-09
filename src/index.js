@@ -15,6 +15,7 @@ import hit from "./assets/sounds/hit.wav";
 import miss from "./assets/sounds/miss.wav";
 import sunk from "./assets/sounds/sunk.wav";
 import deployment from "./assets/sounds/deployment.wav";
+import sonar from "./assets/sounds/sonar.wav"
 import { Player } from "./classes/player";
 let playerOne = new Player("player-one");
 let playerTwo = new Player("player-two");
@@ -36,6 +37,7 @@ const deploymentSound = new Audio(deployment);
 const hitSound = new Audio(hit);
 const missSound = new Audio(miss);
 const sunkSound = new Audio(sunk);
+const sonarSound = new Audio(sonar);
 
 const createPlayerBoard = (playerName, player) => {
     const board = document.createElement("div");
@@ -94,13 +96,15 @@ const sonarConditions = (player) => {
             : "player-one-sonar";
     const sonarContainer = document.getElementById(sonarId);
     if (player.playerGameBoard.isSonarReady() === true) {
-        console.log("true");
         sonarContainer.style.background = "rgb(120, 247, 51)";
         sonarContainer.style.animation = "blink 1.5s linear 0s infinite normal";
         if (sonarContainer.id === "player-one-sonar") {
             sonarContainer.style.cursor = "pointer";
             sonarContainer.onclick = () => {
-                sonarAnimation();
+                sonarAnimation(player);
+                logTextToScreen(
+                    `Player One: Used Sonar`
+                );
                 player.playerGameBoard.resetSonar();
                 sonarContainer.style.removeProperty("animation");
                 sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
@@ -110,29 +114,33 @@ const sonarConditions = (player) => {
         sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
     }
 };
-const sonarAnimation = () => {
-    const array = playerTwo.playerGameBoard.remainingShipCoords;
-    let playerBoard = document.getElementById("player-two-board");
+const sonarAnimation = (player) => {
+      if (audioOn) sonarSound.play();
+    const playerTwoShipCoords = player.playerGameBoard.remainingShipCoords;
+    let playerBoard = document.getElementById(`${player.className}-board`);
 
     playerBoard.childNodes.forEach((row) => {
         row.style.animation = "sonarBoardFlash 1.1s linear 0s  normal";
     });
-
-    array.forEach((coord) => {
+    // if (player.className == "player-two") {
+    playerTwoShipCoords.forEach((coord) => {
         document.getElementById(
-            `player-two-${coord[0]}${coord[1]}`
+            `${player.className}-${coord[0]}${coord[1]}`
         ).childNodes[0].style.animation =
             "sonarShipFlash 1.1s linear 0s  normal";
     });
+    //  }
     setTimeout(() => {
         playerBoard.childNodes.forEach((row) => {
             row.style.removeProperty("animation");
         });
-        array.forEach((coord) => {
+        //   if (player.className == "player-two") {
+        playerTwoShipCoords.forEach((coord) => {
             document
-                .getElementById(`player-two-${coord[0]}${coord[1]}`)
+                .getElementById(`${player.className}-${coord[0]}${coord[1]}`)
                 .childNodes[0].style.removeProperty("animation");
         });
+        //   }
     }, 1100);
 };
 
@@ -183,6 +191,23 @@ const fireShots = (x, y, player, square) => {
                     secondaryHeatSeeker[1]
                 )}`
             );
+        } else if (playerOne.playerGameBoard.isSonarReady() === true) {
+            sonarAnimation(playerOne);
+            playerOne.playerGameBoard.resetSonar(playerOne);
+            const randomNum = Math.floor(
+                Math.random() *
+                    playerOne.playerGameBoard.remainingShipCoords.length
+            );
+            const sonarCoord =
+                playerOne.playerGameBoard.remainingShipCoords[randomNum];
+                playerOne.playerGameBoard.receiveAttack(sonarCoord);
+                logTextToScreen(
+                `Player Two: Used Sonar <br> ${checkSquare(
+                    playerOne,
+                    sonarCoord[0],
+                    sonarCoord[1]
+                )}`)
+            
         } else {
             playerOne.randomShot();
             const list = playerOne.playerGameBoard.attackList;
