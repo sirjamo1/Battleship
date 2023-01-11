@@ -11,18 +11,25 @@ import destroyerRotated from "./assets/icons/destroyerRotated.png";
 import submarine from "./assets/icons/submarine.png";
 import submarineRotated from "./assets/icons/submarineRotated.png";
 import audio from "./assets/icons/audio.png";
+import wrench from "./assets/icons/wrench.png";
 import hit from "./assets/sounds/hit.wav";
 import miss from "./assets/sounds/miss.wav";
 import sunk from "./assets/sounds/sunk.wav";
 import deployment from "./assets/sounds/deployment.wav";
-import sonar from "./assets/sounds/sonar.wav"
+import sonar from "./assets/sounds/sonar.wav";
 import { Player } from "./classes/player";
+// import {Square, square} from "./classes/square"
+// let testSquare = new Square(0,5)
+// console.log(testSquare)
+
 let playerOne = new Player("player-one");
+console.log(playerOne)
 let playerTwo = new Player("player-two");
 let gameStarted = false;
 let shipSelection = null;
+let playerToRepair = null;
 let shipPlacementDirection = "x";
-let audioOn = true;
+let audioOn = false; /////////////////////////////changed this
 const carrierShipRotated = new Image();
 carrierShipRotated.src = carrierRotated;
 const destroyerShipRotated = new Image();
@@ -98,15 +105,15 @@ const sonarConditions = (player) => {
     if (player.playerGameBoard.isSonarReady() === true) {
         sonarContainer.style.background = "rgb(120, 247, 51)";
         sonarContainer.style.animation = "blink 1.5s linear 0s infinite normal";
+        sonarContainer.innerHTML = "SONAR READY";
         if (sonarContainer.id === "player-one-sonar") {
             sonarContainer.style.cursor = "pointer";
             sonarContainer.onclick = () => {
                 sonarAnimation(player);
-                logTextToScreen(
-                    `Player One: Used Sonar`
-                );
+                logTextToScreen(`Player One: Used Sonar`);
                 player.playerGameBoard.resetSonar();
-                sonarContainer.style.removeProperty("animation");
+                resetSonarButton(player);
+                // sonarContainer.style.removeProperty("animation");
                 sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
             };
         }
@@ -114,33 +121,117 @@ const sonarConditions = (player) => {
         sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
     }
 };
+const wrenchConditions = (player) => {
+    // let wrenchId =
+    //     player.className === "player-one"
+    //         ? "player-two-wrench"
+    //         : "player-one-wrench";
+    const wrenchContainer = document.getElementById(`${player.className}-wrench`);
+    if (player.playerGameBoard.isWrenchReady() === true) {
+        wrenchContainer.style.animation =
+            "blink 1.5s linear 0s infinite normal";
+        wrenchContainer.style.background = `conic-gradient(rgb(120, 247, 51) 360deg, red 0deg)`;
+        if (wrenchContainer.id === "player-one-wrench") {
+            wrenchContainer.style.cursor = "pointer";
+            wrenchContainer.onclick = () => {
+                playerToRepair = playerOne;
+            };
+            wrenchContainer.ondragstart = () => {
+                playerToRepair = playerOne;
+            };
+        }
+    } else {
+        wrenchContainer.style.background = `conic-gradient(rgb(120, 247, 51) ${player.playerGameBoard.wrench}deg, red 0deg)`;
+    }
+};
+const resetWrenchButton = (player) => {
+    let wrenchId =
+        player.className === "player-one"
+            ? "player-two-wrench"
+            : "player-one-wrench";
+    const wrenchContainer = document.getElementById(wrenchId);
+    wrenchContainer.style.removeProperty("animation");
+    wrenchContainer.style.background = `conic-gradient(rgb(120, 247, 51) 0deg, red 0deg)`;
+};
+const resetSonarButton = (player) => {
+    let sonarId =
+        player.className === "player-one"
+            ? "player-two-sonar"
+            : "player-one-sonar";
+    const sonarContainer = document.getElementById(sonarId);
+    sonarContainer.style.removeProperty("animation");
+    sonarContainer.innerHTML = "SONAR CHARGING";
+};
+const wrenchAnimation = (player) => {
+    const wrenchContainer = document.getElementById(
+        `${player.className}-wrench`
+    );
+    // style.background = `conic-gradient(rgb(120, 247, 51) ${wrench num here}deg, red 0deg)`;
+};
+const repairShip = (x, y) => {
+    console.log(playerToRepair, x, y);
+    let shipName = null;
+    let coordArray = null;
+    // let squareFullStr = playerToRepair.playerGameBoard.board[x][y];
+    playerToRepair.playerGameBoard.ships.forEach((ship) => {
+        ship.shipCoord.forEach((coord) => {
+            if (coord[0] === x && coord[1] === y) {
+                if(ship.isSunk === true) {
+                    ship.sunk = false;
+                    playerToRepair.playerGameBoard.shipsLeft += 1
+                }
+                shipName = ship.name;
+                coordArray = ship.shipCoord;
+                
+                ship.hitCount = 0;
+                console.log(ship, "coord match");
+            }
+        });
+    });
+     console.log(coordArray, "<--coord array");
+     //console.log(playerToRepair.playerGameBoard.attackList, "<--attack list")
+    coordArray.forEach((coord) => {
+        let square = document.getElementById(
+            `${playerToRepair.className}-${coord[0]}${coord[1]}`
+        );
+        square.style.removeProperty("background-color");
+        console.log(square);
+    });
+
+    // const boardToReset = document.getElementById(
+    //     `${playerToRepair.className}-board`
+    // );
+    console.log(shipName, "<--shipName");
+    // console.log(boardToReset);
+};
 const sonarAnimation = (player) => {
-      if (audioOn) sonarSound.play();
+    if (audioOn) sonarSound.play();
     const playerTwoShipCoords = player.playerGameBoard.remainingShipCoords;
     let playerBoard = document.getElementById(`${player.className}-board`);
-
     playerBoard.childNodes.forEach((row) => {
         row.style.animation = "sonarBoardFlash 1.1s linear 0s  normal";
     });
-    // if (player.className == "player-two") {
-    playerTwoShipCoords.forEach((coord) => {
-        document.getElementById(
-            `${player.className}-${coord[0]}${coord[1]}`
-        ).childNodes[0].style.animation =
-            "sonarShipFlash 1.1s linear 0s  normal";
-    });
-    //  }
+    if (player.className == "player-two") {
+        playerTwoShipCoords.forEach((coord) => {
+            document.getElementById(
+                `${player.className}-${coord[0]}${coord[1]}`
+            ).childNodes[0].style.animation =
+                "sonarShipFlash 1.1s linear 0s  normal";
+        });
+    }
     setTimeout(() => {
         playerBoard.childNodes.forEach((row) => {
             row.style.removeProperty("animation");
         });
-        //   if (player.className == "player-two") {
-        playerTwoShipCoords.forEach((coord) => {
-            document
-                .getElementById(`${player.className}-${coord[0]}${coord[1]}`)
-                .childNodes[0].style.removeProperty("animation");
-        });
-        //   }
+        if (player.className == "player-two") {
+            playerTwoShipCoords.forEach((coord) => {
+                document
+                    .getElementById(
+                        `${player.className}-${coord[0]}${coord[1]}`
+                    )
+                    .childNodes[0].style.removeProperty("animation");
+            });
+        }
     }, 1100);
 };
 
@@ -162,11 +253,10 @@ const fireShots = (x, y, player, square) => {
     } else {
         square.style.backgroundColor = "rgba(255, 0, 0, 0.7)";
     }
-
     const playerTwoBoard = document.getElementById("player-two-board");
     playerTwoBoard.style.pointerEvents = "none";
-    console.log(playerTwo.playerGameBoard.sonar);
     sonarConditions(playerTwo);
+    wrenchConditions(playerOne);
     //playerTwo's shot
     setTimeout(() => {
         if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
@@ -193,21 +283,22 @@ const fireShots = (x, y, player, square) => {
             );
         } else if (playerOne.playerGameBoard.isSonarReady() === true) {
             sonarAnimation(playerOne);
-            playerOne.playerGameBoard.resetSonar(playerOne);
+            playerOne.playerGameBoard.resetSonar();
+            resetSonarButton(playerOne);
             const randomNum = Math.floor(
                 Math.random() *
                     playerOne.playerGameBoard.remainingShipCoords.length
             );
             const sonarCoord =
                 playerOne.playerGameBoard.remainingShipCoords[randomNum];
-                playerOne.playerGameBoard.receiveAttack(sonarCoord);
-                logTextToScreen(
+            playerOne.playerGameBoard.receiveAttack(sonarCoord);
+            logTextToScreen(
                 `Player Two: Used Sonar <br> ${checkSquare(
                     playerOne,
                     sonarCoord[0],
                     sonarCoord[1]
-                )}`)
-            
+                )}`
+            );
         } else {
             playerOne.randomShot();
             const list = playerOne.playerGameBoard.attackList;
@@ -233,7 +324,7 @@ const fireShots = (x, y, player, square) => {
                   "rgba(255, 255, 255, 0.6)")
             : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
         sonarConditions(playerOne);
-        console.log(playerOne.playerGameBoard.sonar);
+        wrenchConditions(playerTwo);
         if (playerOne.playerGameBoard.shipsLeft === 0)
             return logTextToScreen("Player Two Won!");
         playerTwoBoard.style.pointerEvents = "all";
@@ -312,17 +403,22 @@ const allowDrop = (e) => {
 };
 const drop = (e, x, y) => {
     e.preventDefault();
-    playerOne.playerGameBoard.createShip(
-        [x, y],
-        shipPlacementDirection,
-        shipSelection
-    );
-    putShipOnboard(playerOne);
-    playerOne.playerGameBoard.ships.forEach((ship) => {
-        if (ship.name === shipSelection) {
-            removeShipOption(shipSelection);
-        }
-    });
+    if (gameStarted === false) {
+        playerOne.playerGameBoard.createShip(
+            [x, y],
+            shipPlacementDirection,
+            shipSelection
+        );
+        putShipOnboard(playerOne);
+        playerOne.playerGameBoard.ships.forEach((ship) => {
+            if (ship.name === shipSelection) {
+                removeShipOption(shipSelection);
+            }
+        });
+    }
+    if (gameStarted === true) {
+        repairShip(x, y);
+    }
 };
 
 const createShipPlacementContainer = () => {
@@ -457,16 +553,25 @@ const resetGame = () => {
         mainContainer.removeChild(document.getElementById("start-button"));
     }
 };
+
 const CreateMoveLogContainer = () => {
     const logTextContainer = document.createElement("div");
     const playerOneSonar = document.createElement("div");
     playerOneSonar.id = "player-one-sonar";
-    playerOneSonar.innerHTML = "SONAR";
+    playerOneSonar.innerHTML = "SONAR CHARGING";
     logTextContainer.appendChild(playerOneSonar);
+    const playerOneWrench = new Image();
+    playerOneWrench.src = wrench;
+    playerOneWrench.id = "player-one-wrench";
+    logTextContainer.appendChild(playerOneWrench);
     const playerTwoSonar = document.createElement("div");
     playerTwoSonar.id = "player-two-sonar";
-    playerTwoSonar.innerHTML = "SONAR";
+    playerTwoSonar.innerHTML = "SONAR CHARGING";
     logTextContainer.appendChild(playerTwoSonar);
+    const playerTwoWrench = new Image();
+    playerTwoWrench.src = wrench;
+    playerTwoWrench.id = "player-two-wrench";
+    logTextContainer.appendChild(playerTwoWrench);
     logTextContainer.id = "log-text-container";
     const logText = document.createElement("h3");
     logText.id = "log-text";

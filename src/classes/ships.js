@@ -5,7 +5,7 @@ class Ship {
         this.hitCount = hitCount;
         this.sunk = sunk;
         this.shipCoord = [];
-        this.direction = direction
+        this.direction = direction;
     }
     hit() {
         return (this.hitCount += 1);

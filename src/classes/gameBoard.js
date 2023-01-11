@@ -1,7 +1,8 @@
 import { Ship } from "./ships";
+import {Square, square} from "./square"
 const boardSize = 10;
 class GameBoard {
-    constructor(attackList = []) {
+    constructor() {
         this.board = [];
         this.shipList = {
             carrier: {
@@ -28,15 +29,23 @@ class GameBoard {
         this.ships = [];
         this.shipsLeft = 5;
         this.shipsNotDeployed = 5;
-        this.attackList = attackList;
+        this.attackList = [];
         this.heatSeekingList = [];
         this.secondaryHeatSeeker = [];
         this.prevHit = [];
         this.remainingShipCoords = [];
         this.sonar = 0;
+        this.wrench = 0;
         this.createBoard();
     }
-
+    // createBoard() {
+    //     for (let i = 0; i < boardSize; i += 1) {
+    //         this.board[i] = [];
+    //         for (let j = 0; j < boardSize; j += 1) {
+    //             this.board[i][j] = new Square(i, j);
+    //         }
+    //     }
+    // }
     createBoard() {
         for (let i = 0; i < boardSize; i += 1) {
             this.board[i] = [];
@@ -69,20 +78,35 @@ class GameBoard {
     addToSonar(num) {
         if (this.sonar < 100) this.sonar += num;
     }
+    addToWrench(num) {
+        if (this.wrench < 360) this.wrench += num;
+    }
     resetSonar() {
-        this.sonar = 0
+        this.sonar = 0;
+    }
+    resetWrench() {
+        this.wrench = 0;
     }
     isSonarReady() {
         return this.sonar >= 100 ? true : false;
     }
-    sonarAttack() {
-        
+    isWrenchReady() {
+        return this.wrench >= 360 ? true : false;
     }
     receiveAttack(coord) {
+        console.log(
+            this.heatSeekingList,
+            "<--heat",
+            this.secondaryHeatSeeker,
+            "<--sec heat"
+        );
+        console.log(this.attackList, "<-- before add");
         if (this.board[coord[0]][coord[1]].length === 0) {
             this.board[coord[0]][coord[1]] = "x";
             this.addToSonar(50);
-            return this.attackList.push(coord);
+            this.addToWrench(90);
+            this.attackList.push(coord);
+            console.log(this.attackList, "<--after miss");
         } else if (this.board[coord[0]][coord[1]] === "x") {
             return `${coord} has already been tried`;
         } else if (this.board[coord[0]][coord[1]].slice(-3) === "HIT") {
@@ -93,8 +117,16 @@ class GameBoard {
                 shipStrLength - 4
             )} has already been hit`;
         } else {
+            ///Beleive problem is in the coord givin (maybe from heatseekers/sec),
+            //Coord might be multi dimensianl to start with
             this.addToSonar(50);
-            console.log(coord, this.remainingShipCoords);
+            this.addToWrench(90);
+            this.attackList.push(coord);
+            this.prevHit.push(coord);
+            this.heatSeekingList = this.createHeatSeeker(coord);
+            this.getSecondaryHeatSeeker(coord);
+            console.log(this.attackList, "after hit");
+
             for (let i = 0; i < this.remainingShipCoords.length; i += 1) {
                 if (
                     this.isCoordEqual(coord, this.remainingShipCoords[i]) ===
@@ -107,10 +139,10 @@ class GameBoard {
                 if (this.ships[i].name === this.board[coord[0]][coord[1]]) {
                     this.ships[i].hit();
                     this.board[coord[0]][coord[1]] += " HIT";
-                    this.attackList.push(coord);
-                    this.prevHit.push(coord);
-                    this.heatSeekingList = this.createHeatSeeker(coord);
-                    this.getSecondaryHeatSeeker(coord);
+                    // this.attackList.push(coord);
+                    // this.prevHit.push(coord);
+                    // this.heatSeekingList = this.createHeatSeeker(coord);
+                    // this.getSecondaryHeatSeeker(coord);
                     if (this.ships[i].isSunk() === true) {
                         this.shipsLeft -= 1;
                         this.prevHit = [];

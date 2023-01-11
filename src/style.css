@@ -12,7 +12,7 @@ button {
     width: 100vw;
     height: 100vh;
     display: flex;
-    background: url("assets/backgrounds/sand-background.jpg");
+    background: url("assets/backgrounds/water-background.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     text-align: center;
@@ -111,7 +111,7 @@ button {
 .rows {
     display: grid;
     grid-auto-flow: column;
-    background: rgba(120, 247, 51, 0.0)
+    background: rgba(120, 247, 51, 0);
 }
 .squares {
     border: 1px solid black;
@@ -150,9 +150,7 @@ button {
     margin: auto;
     cursor: grabbing;
 }
-/*👉#rotated-ship-container {
-    position: absolute;
-}👈*/
+
 #start-button {
     height: 250px;
     width: 400px;
@@ -197,7 +195,7 @@ button {
     position: relative;
 }
 #player-one-sonar {
-    width: 100px;
+    width: 200px;
     height: 15px;
     position: absolute;
     top: 10px;
@@ -206,12 +204,24 @@ button {
     background: rgb(120, 247, 51);
     background: linear-gradient(90deg, rgb(120, 247, 51) 0%, #000000 0%);
     border-radius: 6px;
-    color: white;
+    color: red;
     letter-spacing: 4px;
     cursor: alias;
+    font-size: 0.8rem;
+}
+#player-one-wrench {
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    top: 35px;
+    left: 10px;
+    border-radius: 50%;
+    border: rgb(120, 247, 51) 1px solid;
+    background: conic-gradient(rgb(120, 247, 51) 0deg, red 0deg);
+    padding: 5px;
 }
 #player-two-sonar {
-    width: 100px;
+    width: 200px;
     height: 15px;
     position: absolute;
     top: 10px;
@@ -220,23 +230,34 @@ button {
     background: rgb(120, 247, 51);
     background: linear-gradient(90deg, rgb(120, 247, 51) 0%, #000000 0%);
     border-radius: 6px;
-    color: white;
+    color: red;
     letter-spacing: 4px;
     cursor: alias;
-    
+    font-size: 0.8rem;
+}
+#player-two-wrench {
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    border-radius: 50%;
+    border: rgb(120, 247, 51) 1px solid;
+    background: conic-gradient(rgb(120, 247, 51) 0deg, red 0deg);
+    padding: 5px;
 }
 @keyframes sonarShipFlash {
     0% {
         opacity: 0;
     }
-     25% {
+    25% {
         opacity: 0.18;
     }
 
     50% {
         opacity: 0;
     }
-     75% {
+    75% {
         opacity: 0.15;
     }
     100% {
@@ -245,20 +266,20 @@ button {
 }
 @keyframes sonarBoardFlash {
     0% {
-      background: rgba(120, 247, 51, 0.0)
+        background: rgba(120, 247, 51, 0);
     }
     25% {
-        background: rgba(120, 247, 51, 0.518)
+        background: rgba(120, 247, 51, 0.518);
     }
 
     50% {
-         background: rgba(120, 247, 51, 0.0)
+        background: rgba(120, 247, 51, 0);
     }
     75% {
-        background: rgba(120, 247, 51, 0.518)
+        background: rgba(120, 247, 51, 0.518);
     }
     100% {
-       background: rgba(120, 247, 51, 0.0)
+        background: rgba(120, 247, 51, 0);
     }
 }
 
