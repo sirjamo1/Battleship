@@ -261,7 +261,7 @@ button {
         opacity: 0.15;
     }
     100% {
-        opacity: 0;
+        opacity: 1;   /*👉Change BACK to 0👈*/
     }
 }
 @keyframes sonarBoardFlash {

@@ -1,5 +1,5 @@
 import { Ship } from "./ships";
-import {Square, square} from "./square"
+import { Square } from "./square";
 const boardSize = 10;
 class GameBoard {
     constructor() {
@@ -37,23 +37,31 @@ class GameBoard {
         this.sonar = 0;
         this.wrench = 0;
         this.createBoard();
+        this.assignBoardSquareDirections();
     }
-    // createBoard() {
-    //     for (let i = 0; i < boardSize; i += 1) {
-    //         this.board[i] = [];
-    //         for (let j = 0; j < boardSize; j += 1) {
-    //             this.board[i][j] = new Square(i, j);
-    //         }
-    //     }
-    // }
     createBoard() {
-        for (let i = 0; i < boardSize; i += 1) {
-            this.board[i] = [];
-            for (let j = 0; j < boardSize; j += 1) {
-                this.board[i][j] = [];
+        for (let x = 0; x < boardSize; x += 1) {
+            this.board[x] = [];
+            for (let y = 0; y < boardSize; y += 1) {
+                this.board[x][y] = new Square(x, y);
             }
         }
     }
+    assignBoardSquareDirections() {
+        for (let x = 0; x < boardSize; x += 1) {
+            for (let y = 0; y < boardSize; y += 1) {
+                this.board[x][y].left =
+                    x - 1 <= 9 && x - 1 >= 0 ? this.board[x - 1][y] : null;
+                this.board[x][y].right =
+                    x + 1 <= 9 && x + 1 >= 0 ? this.board[x + 1][y] : null;
+                this.board[x][y].up =
+                    y - 1 <= 9 && y - 1 >= 0 ? this.board[x][y - 1] : null;
+                this.board[x][y].down =
+                    y + 1 <= 9 && y + 1 >= 0 ? this.board[x][y + 1] : null;
+            }
+        }
+    }
+
     createShip(coord, dir, shipName) {
         if (this.shipList[shipName].quantity <= 0) {
             return `${shipName} is already on the board`;
@@ -70,7 +78,7 @@ class GameBoard {
         this.ships.push(ship);
         coordArray.forEach((square) => {
             this.remainingShipCoords.push(square);
-            this.board[square[0]][square[1]] = shipName;
+            this.board[square[0]][square[1]].value = shipName;
         });
         this.shipList[shipName].quantity -= 1;
         this.shipsNotDeployed -= 1;
@@ -94,39 +102,24 @@ class GameBoard {
         return this.wrench >= 360 ? true : false;
     }
     receiveAttack(coord) {
-        console.log(
-            this.heatSeekingList,
-            "<--heat",
-            this.secondaryHeatSeeker,
-            "<--sec heat"
-        );
-        console.log(this.attackList, "<-- before add");
-        if (this.board[coord[0]][coord[1]].length === 0) {
-            this.board[coord[0]][coord[1]] = "x";
-            this.addToSonar(50);
-            this.addToWrench(90);
-            this.attackList.push(coord);
-            console.log(this.attackList, "<--after miss");
-        } else if (this.board[coord[0]][coord[1]] === "x") {
+        if (this.board[coord[0]][coord[1]].isHit === true) {
             return `${coord} has already been tried`;
-        } else if (this.board[coord[0]][coord[1]].slice(-3) === "HIT") {
-            let shipStrLength = this.board[coord[0]][coord[1]].length;
-
-            return `${this.board[coord[0]][coord[1]].slice(
-                0,
-                shipStrLength - 4
-            )} has already been hit`;
-        } else {
-            ///Beleive problem is in the coord givin (maybe from heatseekers/sec),
-            //Coord might be multi dimensianl to start with
-            this.addToSonar(50);
+        }
+        if (
+            this.board[coord[0]][coord[1]].isHit === false &&
+            this.board[coord[0]][coord[1]].value === null
+        ) {
+            this.board[coord[0]][coord[1]].isHit = true;
+            this.addToSonar(25);
             this.addToWrench(90);
             this.attackList.push(coord);
-            this.prevHit.push(coord);
-            this.heatSeekingList = this.createHeatSeeker(coord);
+        } else {
+            this.board[coord[0]][coord[1]].isHit = true;
+            this.addToSonar(25);
+            this.addToWrench(90);
+            this.attackList.push(coord);
+            this.createHeatSeeker(coord);
             this.getSecondaryHeatSeeker(coord);
-            console.log(this.attackList, "after hit");
-
             for (let i = 0; i < this.remainingShipCoords.length; i += 1) {
                 if (
                     this.isCoordEqual(coord, this.remainingShipCoords[i]) ===
@@ -136,13 +129,11 @@ class GameBoard {
                 }
             }
             for (let i = 0; i < this.ships.length; i += 1) {
-                if (this.ships[i].name === this.board[coord[0]][coord[1]]) {
+                if (
+                    this.ships[i].name === this.board[coord[0]][coord[1]].value
+                ) {
                     this.ships[i].hit();
-                    this.board[coord[0]][coord[1]] += " HIT";
-                    // this.attackList.push(coord);
-                    // this.prevHit.push(coord);
-                    // this.heatSeekingList = this.createHeatSeeker(coord);
-                    // this.getSecondaryHeatSeeker(coord);
+                    this.board[coord[0]][coord[1]].isHit = true;
                     if (this.ships[i].isSunk() === true) {
                         this.shipsLeft -= 1;
                         this.prevHit = [];
@@ -155,115 +146,115 @@ class GameBoard {
             }
         }
     }
-    loadSeekersToArray = (array, currHit, dir, oppositeDirStr) => {
-        if (this.seekerConditions(dir) === true) {
-            array.unshift(dir);
-        }
-        let oppositeDir = this.findOppositeSeeker(currHit, oppositeDirStr, 0);
-        if (oppositeDir != null) {
-            let oneMoreSquare = [oppositeDir[0] - 1, oppositeDir[1]];
+
+    createHeatSeeker(coord) {
+        let square = this.board[coord[0]][coord[1]];
+        if (square.left !== null) {
             if (
-                this.seekerConditions(oneMoreSquare) === true &&
-                this.board[oppositeDir[0]][oppositeDir[1]].length > 0
+                this.prevHit[0] === square.left.x &&
+                this.prevHit[1] === square.left.y
             ) {
-                array.push(oppositeDir);
-                array.push(oneMoreSquare);
-            } else {
-                array.push(oppositeDir);
+                this.loadSeekersToArray(square, square.right, "left");
+            }
+        }
+        if (square.right !== null) {
+            if (
+                this.prevHit[0] === square.right.x &&
+                this.prevHit[1] === square.right.y
+            ) {
+                this.loadSeekersToArray(square, square.left, "right");
+            }
+        }
+        if (square.up !== null) {
+            if (
+                this.prevHit[0] === square.up.x &&
+                this.prevHit[1] === square.up.y
+            ) {
+                this.loadSeekersToArray(square, square.down, "up");
+            }
+        }
+        if (square.down !== null) {
+            if (
+                this.prevHit[0] === square.down.x &&
+                this.prevHit[1] === square.down.y
+            ) {
+                this.loadSeekersToArray(square, square.up, "down");
+            }
+        }
+    }
+
+    loadSeekersToArray = (square, targetSquare, oppositeDirStr) => {
+        if (targetSquare !== null && targetSquare.isHit === false) {
+            this.heatSeekingList.unshift([targetSquare.x, targetSquare.y]);
+        }
+        let oppositeDir = this.findOppositeSeeker(square, oppositeDirStr, 0);
+        if (oppositeDir !== null) {
+            this.heatSeekingList.push([oppositeDir.x, oppositeDir.y]);
+            let oneMoreSquare = this.findOppositeSeeker(
+                oppositeDir,
+                oppositeDirStr,
+                -1
+            );
+            if (oneMoreSquare !== null) {
+                this.heatSeekingList.push([oneMoreSquare.x, oneMoreSquare.y]);
             }
         }
     };
-    createHeatSeeker(currHit) {
-        let heatSeekerArray = [];
-        let left = [currHit[0] - 1, currHit[1]];
-        let right = [currHit[0] + 1, currHit[1]];
-        let down = [currHit[0], currHit[1] + 1];
-        let up = [currHit[0], currHit[1] - 1];
-        if (this.isCoordEqual(this.prevHit, left) === true) {
-            this.loadSeekersToArray(heatSeekerArray, currHit, right, "left");
+    findOppositeSeeker(square, direction, count) {
+        if (count >= 5 || square === null) return null;
+        if (square.isHit === false && count >= 0) {
+            return square;
         }
-        if (this.isCoordEqual(this.prevHit, right) === true) {
-            this.loadSeekersToArray(heatSeekerArray, currHit, left, "right");
+        if (direction === "left") {
+            return this.findOppositeSeeker(
+                square.left,
+                direction,
+                (count += 1)
+            );
         }
-        if (this.isCoordEqual(this.prevHit, up) === true) {
-            this.loadSeekersToArray(heatSeekerArray, currHit, down, "up");
+        if (direction === "right") {
+            return this.findOppositeSeeker(
+                square.right,
+                direction,
+                (count += 1)
+            );
         }
-        if (this.isCoordEqual(this.prevHit, down) === true) {
-            this.loadSeekersToArray(heatSeekerArray, currHit, up, "down");
+        if (direction === "up") {
+            return this.findOppositeSeeker(square.up, direction, (count += 1));
         }
-        return heatSeekerArray;
+        if (direction === "down") {
+            return this.findOppositeSeeker(
+                square.down,
+                direction,
+                (count += 1)
+            );
+        }
     }
     isCoordEqual(coordA, coordB) {
         if (coordA[0] === coordB[0] && coordA[1] === coordB[1]) return true;
         return false;
     }
-    findOppositeSeeker(coord, dir, count) {
-        if (
-            count >= 5 ||
-            coord[0] > 9 ||
-            coord[0] < 0 ||
-            coord[1] > 9 ||
-            coord[2] < 0
-        )
-            return;
-        if (this.board[coord[0]][coord[1]] === "x") return;
-        if (this.seekerConditions(coord) === true) return coord;
-        if (dir === "left")
-            return this.findOppositeSeeker(
-                [coord[0] - 1, coord[1]],
-                dir,
-                (count += 1)
-            );
-        if (dir === "right")
-            return this.findOppositeSeeker(
-                [coord[0] + 1, coord[1]],
-                dir,
-                (count += 1)
-            );
-        if (dir === "down")
-            return this.findOppositeSeeker(
-                [coord[0], coord[1] + 1],
-                dir,
-                (count += 1)
-            );
-        if (dir === "up")
-            return this.findOppositeSeeker(
-                [coord[0], coord[1] - 1],
-                dir,
-                (count += 1)
-            );
-    }
     getSecondaryHeatSeeker(coord) {
         this.secondaryHeatSeeker = [];
-        let left = [coord[0] - 1, coord[1]];
-        let right = [coord[0] + 1, coord[1]];
-        let down = [coord[0], coord[1] + 1];
-        let up = [coord[0], coord[1] - 1];
-        if (this.seekerConditions(left) === true)
-            this.secondaryHeatSeeker.push(left);
-        if (this.seekerConditions(right) === true)
-            this.secondaryHeatSeeker.push(right);
-        if (this.seekerConditions(up) === true)
-            this.secondaryHeatSeeker.push(up);
-        if (this.seekerConditions(down) === true)
-            this.secondaryHeatSeeker.push(down);
+        const square = this.board[coord[0]][coord[1]];
+        if (square.left !== null && square.left.isHit === false) {
+            this.secondaryHeatSeeker.push([square.left.x, square.left.y]);
+        }
+        if (square.right !== null && square.right.isHit === false) {
+            this.secondaryHeatSeeker.push([square.right.x, square.right.y]);
+        }
+        if (square.up !== null && square.up.isHit === false) {
+            this.secondaryHeatSeeker.push([square.up.x, square.up.y]);
+        }
+        if (square.down !== null && square.down.isHit === false) {
+            this.secondaryHeatSeeker.push([square.down.x, square.down.y]);
+        }
     }
     clearHeatSeekingList() {
         return (this.heatSeekingList = []);
     }
     clearSecondaryHeatSeekingList() {
         return (this.secondaryHeatSeeker = []);
-    }
-    seekerConditions(coord) {
-        if (
-            coord[0] < 10 &&
-            coord[0] >= 0 &&
-            coord[1] < 10 &&
-            coord[1] >= 0 &&
-            this.board[coord[0]][coord[1]] !== "x" &&
-            this.board[coord[0]][coord[1]].slice(-3) !== "HIT"
-        )
-            return true;
     }
     getCoordArray(coord, dir, shipLength) {
         let coordArray = [];
@@ -272,8 +263,8 @@ class GameBoard {
             let y = dir === "x" ? coord[1] : coord[1] + i;
             if (y > 9 || y < 0 || x > 9 || x < 0) {
                 return "Ship must be placed on board";
-            } else if (this.board[x][y].length !== 0) {
-                return `${this.board[x][y]} occupies this space`;
+            } else if (this.board[x][y].value !== null) {
+                return `${this.board[x][y].value} occupies this space`;
             } else {
                 coordArray.push([x, y]);
             }
@@ -283,3 +274,5 @@ class GameBoard {
 }
 
 export { GameBoard };
+
+

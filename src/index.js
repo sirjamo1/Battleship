@@ -23,7 +23,7 @@ import { Player } from "./classes/player";
 // console.log(testSquare)
 
 let playerOne = new Player("player-one");
-console.log(playerOne)
+console.log(playerOne);
 let playerTwo = new Player("player-two");
 let gameStarted = false;
 let shipSelection = null;
@@ -126,7 +126,9 @@ const wrenchConditions = (player) => {
     //     player.className === "player-one"
     //         ? "player-two-wrench"
     //         : "player-one-wrench";
-    const wrenchContainer = document.getElementById(`${player.className}-wrench`);
+    const wrenchContainer = document.getElementById(
+        `${player.className}-wrench`
+    );
     if (player.playerGameBoard.isWrenchReady() === true) {
         wrenchContainer.style.animation =
             "blink 1.5s linear 0s infinite normal";
@@ -176,20 +178,20 @@ const repairShip = (x, y) => {
     playerToRepair.playerGameBoard.ships.forEach((ship) => {
         ship.shipCoord.forEach((coord) => {
             if (coord[0] === x && coord[1] === y) {
-                if(ship.isSunk === true) {
+                if (ship.isSunk === true) {
                     ship.sunk = false;
-                    playerToRepair.playerGameBoard.shipsLeft += 1
+                    playerToRepair.playerGameBoard.shipsLeft += 1;
                 }
                 shipName = ship.name;
                 coordArray = ship.shipCoord;
-                
+
                 ship.hitCount = 0;
                 console.log(ship, "coord match");
             }
         });
     });
-     console.log(coordArray, "<--coord array");
-     //console.log(playerToRepair.playerGameBoard.attackList, "<--attack list")
+    console.log(coordArray, "<--coord array");
+    //console.log(playerToRepair.playerGameBoard.attackList, "<--attack list")
     coordArray.forEach((coord) => {
         let square = document.getElementById(
             `${playerToRepair.className}-${coord[0]}${coord[1]}`
@@ -237,18 +239,19 @@ const sonarAnimation = (player) => {
 
 const fireShots = (x, y, player, square) => {
     //playerOne's shot
-
-    if (
-        playerTwo.playerGameBoard.board[x][y].slice(-3) === "HIT" ||
-        playerTwo.playerGameBoard.board[x][y] === "x"
-    )
+    if (playerTwo.playerGameBoard.board[x][y].isHit === true)
         return logTextToScreen("Try another square");
+    // if (
+    //     playerTwo.playerGameBoard.board[x][y].slice(-3) === "HIT" ||
+    //     playerTwo.playerGameBoard.board[x][y] === "x"
+    // )
+    //     return logTextToScreen("Try another square");
 
     playerTwo.playerGameBoard.receiveAttack([x, y]);
     logTextToScreen(`Player one: ${checkSquare(playerTwo, x, y)}`);
     if (playerTwo.playerGameBoard.shipsLeft === 0)
         return logTextToScreen("Player One Won!");
-    if (player.playerGameBoard.board[x][y] === "x") {
+    if (player.playerGameBoard.board[x][y].value === null) {
         square.style.backgroundColor = "rgba(255, 255, 255, 0.6)";
     } else {
         square.style.backgroundColor = "rgba(255, 0, 0, 0.7)";
@@ -263,6 +266,11 @@ const fireShots = (x, y, player, square) => {
             const heatSeekingCoord =
                 playerOne.playerGameBoard.heatSeekingList.shift();
             playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
+            console.log(
+                "if heat true",
+                playerOne.playerGameBoard.heatSeekingList,
+                heatSeekingCoord
+            );
             logTextToScreen(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -273,6 +281,11 @@ const fireShots = (x, y, player, square) => {
         } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
             const secondaryHeatSeeker =
                 playerOne.playerGameBoard.secondaryHeatSeeker.pop();
+            console.log(
+                "if sec == true",
+                playerOne.playerGameBoard.secondaryHeatSeeker,
+                secondaryHeatSeeker
+            );
             playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
             logTextToScreen(
                 `Player Two: ${checkSquare(
@@ -292,6 +305,7 @@ const fireShots = (x, y, player, square) => {
             const sonarCoord =
                 playerOne.playerGameBoard.remainingShipCoords[randomNum];
             playerOne.playerGameBoard.receiveAttack(sonarCoord);
+            console.log("if sonar true", sonarCoord);
             logTextToScreen(
                 `Player Two: Used Sonar <br> ${checkSquare(
                     playerOne,
@@ -301,8 +315,15 @@ const fireShots = (x, y, player, square) => {
             );
         } else {
             playerOne.randomShot();
+
             const list = playerOne.playerGameBoard.attackList;
+
             const index = list.length - 1;
+            console.log(
+                "if random",
+                playerOne.playerGameBoard.attackList,
+                index
+            );
             logTextToScreen(
                 `Player Two: ${checkSquare(
                     playerOne,
@@ -318,8 +339,8 @@ const fireShots = (x, y, player, square) => {
         const playerOneSquare = document.getElementById(
             `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
         );
-        playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]] ===
-        "x"
+        playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]]
+            .value === null
             ? (playerOneSquare.style.backgroundColor =
                   "rgba(255, 255, 255, 0.6)")
             : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
@@ -331,14 +352,16 @@ const fireShots = (x, y, player, square) => {
     }, 1700);
 };
 const checkSquare = (player, x, y) => {
+    const square = player.playerGameBoard.board[x][y];
     const str = player.playerGameBoard.board[x][y];
-    const firstWord = str.substring(0, str.indexOf(" "));
+    // const firstWord = str.substring(0, str.indexOf(" "));
+    let shipName = square.value;
     let message = "";
     player.playerGameBoard.ships.forEach((ship) => {
-        if (ship.name == firstWord && ship.sunk === true) {
+        if (ship.name == shipName && ship.sunk === true) {
             if (audioOn) sunkSound.play();
             message += `Hit! <br> ${
-                firstWord[0].toUpperCase() + firstWord.slice(1)
+                shipName[0].toUpperCase() + shipName.slice(1)
             } has been sunk!`;
             ship.shipCoord.forEach((coord) => {
                 let square = document.getElementById(
@@ -351,11 +374,11 @@ const checkSquare = (player, x, y) => {
         }
     });
     if (message.length > 0) return message;
-    if (str === "x") {
+    if (square.value === null) {
         if (audioOn) missSound.play();
         return `MISSED!`;
     }
-    if (str.slice(-3) === "HIT") {
+    if (square.value !== null) {
         if (audioOn) hitSound.play();
         return `HIT!`;
     }
@@ -514,7 +537,7 @@ const putShipOnboard = (player) => {
                 square.appendChild(imageDiv);
                 num += 1;
                 if (player.className === "player-two") {
-                    imageDiv.style.opacity = "0";
+                    imageDiv.style.opacity = ".7";     /////NEED TO CHANGE BACK TO 0
                 }
                 if (dir === "y") {
                     imageDiv.style.transform = "rotate(90deg)";
