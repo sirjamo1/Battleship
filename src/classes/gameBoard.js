@@ -2,8 +2,9 @@ import { Ship } from "./ships";
 import { Square } from "./square";
 const boardSize = 10;
 class GameBoard {
-    constructor() {
+    constructor(className) {
         this.board = [];
+        this.className = className
         this.shipList = {
             carrier: {
                 length: 5,
@@ -33,7 +34,7 @@ class GameBoard {
         this.heatSeekingList = [];
         this.secondaryHeatSeeker = [];
         this.prevHit = [];
-        this.hitSquaresWithShips = []
+        this.hitSquaresWithShips = [];
         this.remainingShipCoords = [];
         this.sonar = 0;
         this.wrench = 0;
@@ -84,6 +85,59 @@ class GameBoard {
         this.shipList[shipName].quantity -= 1;
         this.shipsNotDeployed -= 1;
     }
+//////////////////////////////added in below
+    populateBoard() {
+        this.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "carrier"
+        );
+        this.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "battleship"
+        );
+        this.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "cruiser"
+        );
+        this.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "submarine"
+        );
+        this.createShip(
+            this.randomCoord(),
+            this.randomOrientation(),
+            "destroyer"
+        );
+        while (this.shipsNotDeployed !== 0) {
+            this.populateBoard();
+        }
+    }
+    randomCoord() {
+        return [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)];
+    }
+    randomOrientation() {
+        return Math.round(Math.random()) === 0 ? "x" : "y";
+    }
+    randomShot() {
+        let coord = this.randomCoord();
+        let attackList = this.attackList;
+        if (attackList.length === 0) {
+            return this.receiveAttack(coord);
+        }
+        for (let i = 0; i < attackList.length; i += 1) {
+            if (
+                this.isCoordEqual(coord, attackList[i]) === true
+            ) {
+                return this.randomShot();
+            }
+        }
+        this.receiveAttack(coord);
+    }
+//////////////////////added in above
     addToSonar(num) {
         if (this.sonar < 100) this.sonar += num;
     }

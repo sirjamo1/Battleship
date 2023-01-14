@@ -19,11 +19,11 @@ import deployment from "./assets/sounds/deployment.wav";
 import sonar from "./assets/sounds/sonar.wav";
 import repair from "./assets/sounds/repair.wav";
 import digitalTyping from "./assets/sounds/digitalTyping.wav";
-import { Player } from "./classes/player";
+import { GameBoard } from "./classes/gameBoard";
 
-let playerOne = new Player("player-one");
-console.log(playerOne);
-let playerTwo = new Player("player-two");
+
+let playerOne = new GameBoard("player-one");
+let playerTwo = new GameBoard("player-two");
 let gameStarted = false;
 let shipSelection = null;
 let shipPlacementDirection = "x";
@@ -49,10 +49,10 @@ const digitalTypingSound = new Audio(digitalTyping);
 const createPlayerBoard = (playerName, player) => {
     const board = document.createElement("div");
     board.id = `${playerName}-board`;
-    for (let i = 0; i < player.playerGameBoard.board.length; i += 1) {
+    for (let i = 0; i < player.board.length; i += 1) {
         const row = document.createElement("div");
         row.classList = "rows";
-        for (let j = 0; j < player.playerGameBoard.board[i].length; j += 1) {
+        for (let j = 0; j < player.board[i].length; j += 1) {
             const square = document.createElement("div");
             square.id = `${playerName}-${j}${i}`;
             square.classList = "squares";
@@ -87,7 +87,7 @@ const createPlayerBoard = (playerName, player) => {
 const isGameReadyToStart = (x, y) => {
     if (shipSelection === null)
         return logTextToScreen("Please place all ships on the board");
-    playerOne.playerGameBoard.createShip(
+    playerOne.createShip(
         [x, y],
         shipPlacementDirection,
         shipSelection
@@ -98,7 +98,7 @@ const isGameReadyToStart = (x, y) => {
 
 const sonarConditions = (player) => {
     const sonarContainer = document.getElementById(`${player.className}-sonar`);
-    if (player.playerGameBoard.isSonarReady() === true) {
+    if (player.isSonarReady() === true) {
         sonarContainer.style.background = "rgb(120, 247, 51)";
         sonarContainer.style.animation = "blink 1.5s linear 0s infinite normal";
         sonarContainer.innerHTML = "SONAR READY";
@@ -107,35 +107,31 @@ const sonarConditions = (player) => {
             sonarContainer.onclick = () => {
                 sonarAnimation(player);
                 logTextToScreen(`Player One: Used Sonar`);
-                player.playerGameBoard.resetSonar();
+                player.resetSonar();
                 resetSonarButton(player);
-                sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
+                sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.sonar}%, #000000 0%)`;
             };
         }
     } else {
-        sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.playerGameBoard.sonar}%, #000000 0%)`;
+        sonarContainer.style.background = `linear-gradient(90deg, rgb(120, 247, 51) ${player.sonar}%, #000000 0%)`;
     }
 };
 const wrenchConditions = (player) => {
     const wrenchIcon = document.getElementById(`${player.className}-wrench`);
-    if (player.playerGameBoard.isWrenchReady() === true) {
+    if (player.isWrenchReady() === true) {
         wrenchIcon.style.animation = "blink 1.5s linear 0s infinite normal";
         wrenchIcon.style.background = `conic-gradient(rgb(120, 247, 51) 360deg, red 0deg)`;
         if (wrenchIcon.id === "player-one-wrench") {
             wrenchIcon.style.cursor = "pointer";
-            wrenchIcon.onclick = () => {
-               // playerToRepair = playerOne;
-            };
             wrenchIcon.ondragstart = () => {
-               // playerToRepair = playerOne;
+
             };
         }
     } else {
-        wrenchIcon.style.background = `conic-gradient(rgb(120, 247, 51) ${player.playerGameBoard.wrench}deg, red 0deg)`;
+        wrenchIcon.style.background = `conic-gradient(rgb(120, 247, 51) ${player.wrench}deg, red 0deg)`;
     }
 };
 const resetWrenchButton = (player) => {
-    console.log(player.className, "reset wrench button")
     const wrenchIcon = document.getElementById(`${player.className}-wrench`);
     wrenchIcon.style.removeProperty("animation");
     wrenchIcon.style.background = `conic-gradient(rgb(120, 247, 51) 0deg, red 0deg)`;
@@ -146,40 +142,38 @@ const resetSonarButton = (player) => {
     sonarContainer.innerHTML = "SONAR CHARGING";
 };
 const repairShip = (x, y, playerToRepair) => {
-    const square = playerToRepair.playerGameBoard.board[x][y];
+    const square = playerToRepair.board[x][y];
     const shipName = square.value;
     if (shipName === null) return logTextToScreen("No ship found...");
     if (audioOn) repairSound.play();
     const playerTextName =
         playerToRepair.className === "player-one" ? "Player one" : "Player two";
     logTextToScreen(`${playerTextName}: Used repair`);
-    console.log('after log text to screen')
     let coordArray = null;
-    playerToRepair.playerGameBoard.ships.forEach((ship) => {
+    playerToRepair.ships.forEach((ship) => {
         if (shipName === ship.name) {
             if (ship.sunk === true) {
                 ship.sunk = false;
-                playerToRepair.playerGameBoard.shipsLeft += 1;
+                playerToRepair.shipsLeft += 1;
             }
             coordArray = ship.shipCoord;
             ship.hitCount = 0;
         }
     });
-    let attackList = playerToRepair.playerGameBoard.attackList;
+    let attackList = playerToRepair.attackList;
     let hitSquaresWithShips =
-        playerToRepair.playerGameBoard.hitSquaresWithShips;
-        console.log('hit squares with ships (after')
+        playerToRepair.hitSquaresWithShips;
     for (let i = 0; i < attackList.length; i += 1) {
         for (let j = 0; j < coordArray.length; j += 1) {
             let displaySquare = document.getElementById(
                 `${playerToRepair.className}-${coordArray[j][0]}${coordArray[j][1]}`
             );
             let boardSquare =
-                playerToRepair.playerGameBoard.board[coordArray[j][0]][
+                playerToRepair.board[coordArray[j][0]][
                     coordArray[j][1]
                 ];
             if (boardSquare.isHit === true) {
-                playerToRepair.playerGameBoard.remainingShipCoords.push([
+                playerToRepair.remainingShipCoords.push([
                     coordArray[j][0],
                     coordArray[j][1],
                 ]);
@@ -205,9 +199,8 @@ const repairShip = (x, y, playerToRepair) => {
             }
         }
     }
-    console.log('just before reset wrench button')
     resetWrenchButton(playerToRepair);
-    playerToRepair.playerGameBoard.resetWrench();
+    playerToRepair.resetWrench();
     if (playerToRepair.className === "player-one")
         return setTimeout(() => playerTwosShot(), 3000);
 };
@@ -217,7 +210,7 @@ const sonarAnimation = (player) => {
             ? "player-two-board"
             : "player-one-board";
     if (audioOn) sonarSound.play();
-    const playerTwoShipCoords = playerTwo.playerGameBoard.remainingShipCoords;
+    const playerTwoShipCoords = playerTwo.remainingShipCoords;
     let playerBoard = document.getElementById(playerBoardId);
     playerBoard.childNodes.forEach((row) => {
         row.style.animation = "sonarBoardFlash 1.1s linear 0s  normal";
@@ -250,14 +243,16 @@ const enableBoardClick = (board) => {
     board.style.pointerEvents = "all";
 };
 const fireShots = (x, y, player, square) => {
-    //playerOne's shot
-    if (playerTwo.playerGameBoard.board[x][y].isHit === true)
+    playerOnesShot(x, y, player, square);
+    setTimeout(() => playerTwosShot(), 3000);
+};
+const playerOnesShot = (x, y, player, square) => {
+    if (playerTwo.board[x][y].isHit === true)
         return logTextToScreen("Try another square");
-    playerTwo.playerGameBoard.receiveAttack([x, y]);
+    playerTwo.receiveAttack([x, y]);
     logTextToScreen(`Player one: ${checkSquare(playerTwo, x, y)}`);
-    if (playerTwo.playerGameBoard.shipsLeft === 0)
-        return logTextToScreen("Player One Won!");
-    if (player.playerGameBoard.board[x][y].value === null) {
+    if (playerTwo.shipsLeft === 0) return logTextToScreen("Player One Won!");
+    if (player.board[x][y].value === null) {
         square.style.backgroundColor = "rgba(255, 255, 255, 0.6)";
     } else {
         square.style.backgroundColor = "rgba(255, 0, 0, 0.7)";
@@ -265,32 +260,27 @@ const fireShots = (x, y, player, square) => {
     const playerTwoBoard = document.getElementById("player-two-board");
     disableBoardClick(playerTwoBoard);
     setTimeout(() => enableBoardClick(playerTwoBoard), 6000);
-    playerOne.playerGameBoard.addToSonar(20);
-    playerOne.playerGameBoard.addToWrench(50);
+    playerOne.addToSonar(20);
+    playerOne.addToWrench(50);
     sonarConditions(playerOne);
     wrenchConditions(playerOne);
-    //playerTwo's shot
-    setTimeout(() => playerTwosShot(), 3000);
 };
-
 const playerTwosShot = () => {
-    let hitSquares = playerTwo.playerGameBoard.hitSquaresWithShips;
+    let hitSquares = playerTwo.hitSquaresWithShips;
     if (
-        playerTwo.playerGameBoard.isWrenchReady() === true &&
+        playerTwo.isWrenchReady() === true &&
         hitSquares.length > 0
     ) {
         let randomIndex = Math.floor(Math.random() * hitSquares.length);
-        console.log("player two used ship repair"); //////////////////
         repairShip(
             hitSquares[randomIndex][0],
             hitSquares[randomIndex][1],
             playerTwo
         );
-    } else if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
+    } else if (playerOne.heatSeekingList.length > 0) {
         const heatSeekingCoord =
-            playerOne.playerGameBoard.heatSeekingList.shift();
-        playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
-        console.log("player two used heat seek"); //////////////////
+            playerOne.heatSeekingList.shift();
+        playerOne.receiveAttack(heatSeekingCoord);
         logTextToScreen(
             `Player Two: ${checkSquare(
                 playerOne,
@@ -298,11 +288,10 @@ const playerTwosShot = () => {
                 heatSeekingCoord[1]
             )}`
         );
-    } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
+    } else if (playerOne.secondaryHeatSeeker.length > 0) {
         const secondaryHeatSeeker =
-            playerOne.playerGameBoard.secondaryHeatSeeker.pop();
-        console.log("player two used secondary heat seek"); //////////
-        playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
+            playerOne.secondaryHeatSeeker.pop();
+        playerOne.receiveAttack(secondaryHeatSeeker);
         logTextToScreen(
             `Player Two: ${checkSquare(
                 playerOne,
@@ -310,25 +299,21 @@ const playerTwosShot = () => {
                 secondaryHeatSeeker[1]
             )}`
         );
-    } else if (playerTwo.playerGameBoard.isSonarReady() === true) {
+    } else if (playerTwo.isSonarReady() === true) {
         sonarAnimation(playerTwo);
-        playerTwo.playerGameBoard.resetSonar();
+        playerTwo.resetSonar();
         resetSonarButton(playerTwo);
         const randomNum = Math.floor(
-            Math.random() * playerOne.playerGameBoard.remainingShipCoords.length
+            Math.random() * playerOne.remainingShipCoords.length
         );
         const sonarCoord =
-            playerOne.playerGameBoard.remainingShipCoords[randomNum];
-        playerOne.playerGameBoard.receiveAttack(sonarCoord);
-        console.log("Player two used sonar"); /////////////////////////////////
+            playerOne.remainingShipCoords[randomNum];
+        playerOne.receiveAttack(sonarCoord);
         logTextToScreen(`Player Two: Used Sonar HIT!`);
     } else {
         playerOne.randomShot();
-
-        const list = playerOne.playerGameBoard.attackList;
-
+        const list = playerOne.attackList;
         const index = list.length - 1;
-        console.log("player two used random shot"); /////////////////////////
         logTextToScreen(
             `Player Two: ${checkSquare(
                 playerOne,
@@ -338,29 +323,29 @@ const playerTwosShot = () => {
         );
     }
     const playerTwoShot =
-        playerOne.playerGameBoard.attackList[
-            playerOne.playerGameBoard.attackList.length - 1
+        playerOne.attackList[
+            playerOne.attackList.length - 1
         ];
     const playerOneSquare = document.getElementById(
         `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
     );
-    playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]]
+    playerOne.board[playerTwoShot[0]][playerTwoShot[1]]
         .value === null
         ? (playerOneSquare.style.backgroundColor = "rgba(255, 255, 255, 0.6)")
         : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
-    playerTwo.playerGameBoard.addToSonar(20);
-    playerTwo.playerGameBoard.addToWrench(60);
+    playerTwo.addToSonar(20);
+    playerTwo.addToWrench(60);
     sonarConditions(playerTwo);
     wrenchConditions(playerTwo);
-    if (playerOne.playerGameBoard.shipsLeft === 0)
+    if (playerOne.shipsLeft === 0)
         return logTextToScreen("Player Two Won!");
 };
 
 const checkSquare = (player, x, y) => {
-    const square = player.playerGameBoard.board[x][y];
+    const square = player.board[x][y];
     let shipName = square.value;
     let message = "";
-    player.playerGameBoard.ships.forEach((ship) => {
+    player.ships.forEach((ship) => {
         if (ship.name == shipName && ship.sunk === true) {
             if (audioOn) sunkSound.play();
             message += `Hit! ${
@@ -372,8 +357,8 @@ const checkSquare = (player, x, y) => {
                 );
                 square.childNodes[0].style.opacity = "1";
             });
-            player.playerGameBoard.clearHeatSeekingList();
-            player.playerGameBoard.clearSecondaryHeatSeekingList();
+            player.clearHeatSeekingList();
+            player.clearSecondaryHeatSeekingList();
         }
     });
     if (message.length > 0) return message;
@@ -445,13 +430,13 @@ const allowDrop = (e) => {
 const drop = (e, x, y) => {
     e.preventDefault();
     if (gameStarted === false) {
-        playerOne.playerGameBoard.createShip(
+        playerOne.createShip(
             [x, y],
             shipPlacementDirection,
             shipSelection
         );
         putShipOnboard(playerOne);
-        playerOne.playerGameBoard.ships.forEach((ship) => {
+        playerOne.ships.forEach((ship) => {
             if (ship.name === shipSelection) {
                 removeShipOption(shipSelection);
             }
@@ -541,11 +526,11 @@ function component() {
 }
 
 const putShipOnboard = (player) => {
-    for (let i = 0; i < player.playerGameBoard.ships.length; i += 1) {
+    for (let i = 0; i < player.ships.length; i += 1) {
         let num = 0;
-        player.playerGameBoard.ships[i].shipCoord.forEach((coord) => {
-            let shipName = player.playerGameBoard.ships[i].name;
-            let dir = player.playerGameBoard.ships[i].direction;
+        player.ships[i].shipCoord.forEach((coord) => {
+            let shipName = player.ships[i].name;
+            let dir = player.ships[i].direction;
             let square = document.getElementById(
                 `${player.className}-${coord[0]}${coord[1]}`
             );
@@ -565,8 +550,8 @@ const putShipOnboard = (player) => {
     }
 };
 const resetGame = () => {
-    playerOne = new Player("player-one");
-    playerTwo = new Player("player-two");
+    playerOne = new GameBoard("player-one");
+    playerTwo = new GameBoard("player-two");
     gameStarted = false;
     shipSelection = null;
     shipPlacementDirection = "x";
@@ -633,7 +618,7 @@ const removeShipOption = (ship) => {
             if (audioOn) deploymentSound.play();
         }
     }
-    if (playerOne.playerGameBoard.shipsNotDeployed <= 0) {
+    if (playerOne.shipsNotDeployed <= 0) {
         const resetButton = document.createElement("button");
         resetButton.id = "reset-button";
         resetButton.innerHTML = "Reset";
@@ -673,100 +658,3 @@ const disablePlayerOneBoardClick = () => {
 };
 document.body.appendChild(component());
 
-// setTimeout(() => {
-
-// let hitSquares = playerTwo.playerGameBoard.hitSquaresWithShips;
-// if (
-//     playerTwo.playerGameBoard.isWrenchReady() === true &&
-//     hitSquares.length > 0
-// ) {
-//     let randomIndex = Math.floor(Math.random() * hitSquares.length);
-//     console.log("player two used ship repair"); //////////////////
-//     repairShip(
-//         hitSquares[randomIndex][0],
-//         hitSquares[randomIndex][1],
-//         playerTwo
-//     );
-// }
-// if (playerOne.playerGameBoard.heatSeekingList.length > 0) {
-//     const heatSeekingCoord =
-//         playerOne.playerGameBoard.heatSeekingList.shift();
-//     playerOne.playerGameBoard.receiveAttack(heatSeekingCoord);
-//     console.log("player two used heat seek"); //////////////////
-//     logTextToScreen(
-//         `Player Two: ${checkSquare(
-//             playerOne,
-//             heatSeekingCoord[0],
-//             heatSeekingCoord[1]
-//         )}`
-//     );
-// } else if (playerOne.playerGameBoard.secondaryHeatSeeker.length > 0) {
-//     const secondaryHeatSeeker =
-//         playerOne.playerGameBoard.secondaryHeatSeeker.pop();
-//     console.log("player two used secondary heat seek"); //////////
-//     playerOne.playerGameBoard.receiveAttack(secondaryHeatSeeker);
-//     logTextToScreen(
-//         `Player Two: ${checkSquare(
-//             playerOne,
-//             secondaryHeatSeeker[0],
-//             secondaryHeatSeeker[1]
-//         )}`
-//     );
-// } else if (playerTwo.playerGameBoard.isSonarReady() === true) {
-//     sonarAnimation(playerTwo);
-//     playerTwo.playerGameBoard.resetSonar();
-//     resetSonarButton(playerTwo);
-//     const randomNum = Math.floor(
-//         Math.random() *
-//             playerOne.playerGameBoard.remainingShipCoords.length
-//     );
-//     const sonarCoord =
-//         playerOne.playerGameBoard.remainingShipCoords[randomNum];
-//     playerOne.playerGameBoard.receiveAttack(sonarCoord);
-//     console.log("player two used sonar"); /////////////////////////////////
-//     logTextToScreen(
-//         `Player Two: Used Sonar <br> ${checkSquare(
-//             playerOne,
-//             sonarCoord[0],
-//             sonarCoord[1]
-//         )}`
-//     );
-// } else {
-//     playerOne.randomShot();
-
-//     const list = playerOne.playerGameBoard.attackList;
-
-//     const index = list.length - 1;
-//     console.log("player two used random shot"); /////////////////////////
-//     logTextToScreen(
-//         `Player Two: ${checkSquare(
-//             playerOne,
-//             list[index][0],
-//             list[index][1]
-//         )}`
-//     );
-// }
-// const playerTwoShot =
-//     playerOne.playerGameBoard.attackList[
-//         playerOne.playerGameBoard.attackList.length - 1
-//     ];
-// const playerOneSquare = document.getElementById(
-//     `player-one-${playerTwoShot[0]}${playerTwoShot[1]}`
-// );
-// playerOne.playerGameBoard.board[playerTwoShot[0]][playerTwoShot[1]]
-//     .value === null
-//     ? (playerOneSquare.style.backgroundColor =
-//           "rgba(255, 255, 255, 0.6)")
-//     : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
-// playerTwo.playerGameBoard.addToSonar(20);
-// playerTwo.playerGameBoard.addToWrench(20);
-// sonarConditions(playerTwo);
-// wrenchConditions(playerTwo);
-// if (playerOne.playerGameBoard.shipsLeft === 0)
-//     return logTextToScreen("Player Two Won!");
-
-//}, 2000);
-
-// setTimeout(() => {
-//     playerTwoBoard.style.pointerEvents = "all";
-// }, 4000);
