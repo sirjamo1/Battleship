@@ -191,6 +191,7 @@ button {
     background: black;
     border-radius: 6px;
     width: 70vw;
+    max-width: 800px;
     border: 2px solid rgb(120, 247, 51);
     position: relative;
 }
