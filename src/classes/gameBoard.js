@@ -33,6 +33,7 @@ class GameBoard {
         this.heatSeekingList = [];
         this.secondaryHeatSeeker = [];
         this.prevHit = [];
+        this.hitSquaresWithShips = []
         this.remainingShipCoords = [];
         this.sonar = 0;
         this.wrench = 0;
@@ -110,14 +111,12 @@ class GameBoard {
             this.board[coord[0]][coord[1]].value === null
         ) {
             this.board[coord[0]][coord[1]].isHit = true;
-            this.addToSonar(25);
-            this.addToWrench(90);
+
             this.attackList.push(coord);
         } else {
             this.board[coord[0]][coord[1]].isHit = true;
-            this.addToSonar(25);
-            this.addToWrench(90);
             this.attackList.push(coord);
+            this.hitSquaresWithShips.push(coord);
             this.createHeatSeeker(coord);
             this.getSecondaryHeatSeeker(coord);
             for (let i = 0; i < this.remainingShipCoords.length; i += 1) {
