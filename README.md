@@ -24,7 +24,7 @@
     <a href="https://github.com/sirjamo1/Battleship"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href=" https://sirjamo1.github.io/Battleship/">View Demo</a>
+    <a href="https://sirjamo1.github.io/Battleship/">View Demo</a>
     ·
     <a href="https://github.com/sirjamo1/Battleship/issues">Report Bug</a>
     ·
@@ -59,7 +59,7 @@ Link below for Project criteria.
 
 https://www.theodinproject.com/lessons/node-path-javascript-battleship
 
-<a href=" https://sirjamo1.github.io/Battleship/">Live preview link</a>
+<a href="https://sirjamo1.github.io/Battleship/">Live preview link</a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -71,8 +71,6 @@ https://www.theodinproject.com/lessons/node-path-javascript-battleship
 -   css
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- USAGE EXAMPLES -->
 
@@ -104,7 +102,8 @@ https://www.theodinproject.com/lessons/node-path-javascript-battleship
         -   Reveals ships location with two blinks of opacity change
     -   Player twos usage
         -   Next shot is a guaranteed hit.
--   Wrench.
+-   Wrench
+    -   Charges up over time
     -   Player one usage.
         -   Repairs whole ship which it is dragged/dropped on to
     -   Player Two usage
