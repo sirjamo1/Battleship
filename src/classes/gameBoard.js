@@ -83,31 +83,21 @@ class GameBoard {
         this.shipsNotDeployed -= 1;
     }
     populateBoard() {
-        this.createShip(
-            this.randomCoord(),
-            this.randomOrientation(),
-            "carrier"
-        );
-        this.createShip(
-            this.randomCoord(),
-            this.randomOrientation(),
-            "battleship"
-        );
-        this.createShip(
-            this.randomCoord(),
-            this.randomOrientation(),
-            "cruiser"
-        );
-        this.createShip(
-            this.randomCoord(),
-            this.randomOrientation(),
-            "submarine"
-        );
-        this.createShip(
-            this.randomCoord(),
-            this.randomOrientation(),
-            "destroyer"
-        );
+        for (const key in this.shipList) {
+            let count = 0;
+            this.ships.forEach((ship) => {
+                if (key === ship.name) {
+                    count += 1;
+                }
+            });
+            if (count === 0) {
+                this.createShip(
+                    this.randomCoord(),
+                    this.randomOrientation(),
+                    key
+                );
+            }
+        }
         if (this.shipsNotDeployed > 0) return this.populateBoard();
     }
     randomCoord() {
