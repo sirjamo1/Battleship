@@ -4,7 +4,7 @@ const boardSize = 10;
 class GameBoard {
     constructor(className) {
         this.board = [];
-        this.className = className
+        this.className = className;
         this.shipList = {
             carrier: {
                 length: 5,
@@ -65,9 +65,6 @@ class GameBoard {
     }
 
     createShip(coord, dir, shipName) {
-        if (this.shipList[shipName].quantity <= 0) {
-            return `${shipName} is already on the board`;
-        }
         let coordArray = this.getCoordArray(
             coord,
             dir,
@@ -85,7 +82,6 @@ class GameBoard {
         this.shipList[shipName].quantity -= 1;
         this.shipsNotDeployed -= 1;
     }
-//////////////////////////////added in below
     populateBoard() {
         this.createShip(
             this.randomCoord(),
@@ -112,9 +108,7 @@ class GameBoard {
             this.randomOrientation(),
             "destroyer"
         );
-        while (this.shipsNotDeployed !== 0) {
-            this.populateBoard();
-        }
+        if (this.shipsNotDeployed > 0) return this.populateBoard();
     }
     randomCoord() {
         return [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)];
@@ -129,29 +123,26 @@ class GameBoard {
             return this.receiveAttack(coord);
         }
         for (let i = 0; i < attackList.length; i += 1) {
-            if (
-                this.isCoordEqual(coord, attackList[i]) === true
-            ) {
+            if (this.isCoordEqual(coord, attackList[i]) === true) {
                 return this.randomShot();
             }
         }
         this.receiveAttack(coord);
     }
-//////////////////////added in above
     addToSonar(num) {
         if (this.sonar < 100) this.sonar += num;
     }
-    addToWrench(num) {
-        if (this.wrench < 360) this.wrench += num;
+    isSonarReady() {
+        return this.sonar >= 100 ? true : false;
     }
     resetSonar() {
         this.sonar = 0;
     }
+    addToWrench(num) {
+        if (this.wrench < 360) this.wrench += num;
+    }
     resetWrench() {
         this.wrench = 0;
-    }
-    isSonarReady() {
-        return this.sonar >= 100 ? true : false;
     }
     isWrenchReady() {
         return this.wrench >= 360 ? true : false;
@@ -201,7 +192,7 @@ class GameBoard {
     }
 
     createHeatSeeker(coord) {
-        let square = this.board[coord[0]][coord[1]];
+        const square = this.board[coord[0]][coord[1]];
         if (square.left !== null) {
             if (
                 this.prevHit[0] === square.left.x &&
@@ -327,5 +318,3 @@ class GameBoard {
 }
 
 export { GameBoard };
-
-
