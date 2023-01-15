@@ -16,11 +16,12 @@ const wrenchConditions = (player) => {
     }
 };
 const resetWrenchButton = (player) => {
+
     const wrenchIcon = document.getElementById(`${player.className}-wrench`);
     wrenchIcon.style.removeProperty("animation");
     wrenchIcon.style.background = `conic-gradient(rgb(120, 247, 51) 0deg, red 0deg)`;
 };
-const repairShip = (x, y, playerToRepair, audioOn, playerTwo) => {
+const repairShip = (x, y, playerToRepair, audioOn, playerOne, playerTwo) => {
     const square = playerToRepair.board[x][y];
     const shipName = square.value;
     if (shipName === null) return logTextToScreen("No ship found...", audioOn);
@@ -39,45 +40,44 @@ const repairShip = (x, y, playerToRepair, audioOn, playerTwo) => {
             ship.hitCount = 0;
         }
     });
+
     let attackList = playerToRepair.attackList;
     let hitSquaresWithShips = playerToRepair.hitSquaresWithShips;
-    for (let i = 0; i < attackList.length; i += 1) {
-        for (let j = 0; j < coordArray.length; j += 1) {
-            let displaySquare = document.getElementById(
-                `${playerToRepair.className}-${coordArray[j][0]}${coordArray[j][1]}`
-            );
-            let boardSquare =
-                playerToRepair.board[coordArray[j][0]][coordArray[j][1]];
-            if (boardSquare.isHit === true) {
-                playerToRepair.remainingShipCoords.push([
-                    coordArray[j][0],
-                    coordArray[j][1],
-                ]);
-                boardSquare.isHit = false;
-                for (let i = 0; i < hitSquaresWithShips.length; i += 1) {
-                    if (
-                        hitSquaresWithShips[i][0] === coordArray[j][0] &&
-                        hitSquaresWithShips[i][1] === coordArray[j][1]
-                    ) {
-                        hitSquaresWithShips.splice(i, 1);
-                    }
-                }
-            }
-            displaySquare.style.removeProperty("background-color");
-            if (playerToRepair.className === "player-two") {
-                displaySquare.childNodes[0].style.opacity = "0";
-            }
+    coordArray.forEach((coord) => {
+        for (let i = 0; i < attackList.length; i += 1) {
             if (
-                attackList[i][0] === coordArray[j][0] &&
-                attackList[i][1] === coordArray[j][1]
+                coord[0] === attackList[i][0] &&
+                coord[1] === attackList[i][1]
             ) {
                 attackList.splice(i, 1);
             }
         }
-    }
+        for (let i = 0; i < hitSquaresWithShips.length; i += 1) {
+            if (
+                coord[0] === hitSquaresWithShips[i][0] &&
+                coord[1] === hitSquaresWithShips[i][1]
+            ) {
+                hitSquaresWithShips.splice(i, 1);
+            }
+        }
+        let boardSquare = playerToRepair.board[coord[0]][coord[1]];
+        if (boardSquare.isHit === true) {
+            playerToRepair.remainingShipCoords.push([coord[0], coord[1]]);
+            boardSquare.isHit = false
+        }
+        let displaySquare = document.getElementById(
+                `${playerToRepair.className}-${coord[0]}${coord[1]}`)
+                displaySquare.style.removeProperty("background-color");
+                if (playerToRepair.className === "player-two") {
+                    displaySquare.childNodes[0].style.opacity = "0";
+                }
+    });
     resetWrenchButton(playerToRepair);
     playerToRepair.resetWrench();
     if (playerToRepair.className === "player-one")
-        return setTimeout(() => playerTwosShot(playerTwo, playerToRepair, audioOn), 3000);
+        return setTimeout(
+            () => playerTwosShot(playerTwo, playerToRepair, audioOn),
+            3000
+        );
 };
 export { wrenchConditions, resetWrenchButton, repairShip };

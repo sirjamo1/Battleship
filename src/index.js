@@ -139,7 +139,7 @@ const drop = (e, x, y) => {
         });
     }
     if (gameStarted === true) {
-        repairShip(x, y, playerOne, audioOn, playerTwo);
+        repairShip(x, y, playerOne, audioOn,playerOne, playerTwo);
     }
 };
 

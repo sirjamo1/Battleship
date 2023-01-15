@@ -3,19 +3,28 @@ import { resetSonarButton, sonarAnimation, sonarConditions } from "./sonar";
 import { wrenchConditions, repairShip } from "./wrench";
 import { checkSquare } from "./checkSquare";
 
-
-
 const disableBoardClick = (board) => {
     board.style.pointerEvents = "none";
 };
 const enableBoardClick = (board) => {
     board.style.pointerEvents = "all";
 };
-const playerOnesShot = (playerOne, x, y, player, square, playerTwo, audioOn) => {
+const playerOnesShot = (
+    playerOne,
+    x,
+    y,
+    player,
+    square,
+    playerTwo,
+    audioOn
+) => {
     if (playerTwo.board[x][y].isHit === true)
         return logTextToScreen("Try another square", audioOn);
     playerTwo.receiveAttack([x, y]);
-    logTextToScreen(`Player one: ${checkSquare(playerTwo, x, y, audioOn)}`, audioOn);
+    logTextToScreen(
+        `Player one: ${checkSquare(playerTwo, x, y, audioOn)}`,
+        audioOn
+    );
     if (playerTwo.shipsLeft === 0)
         return logTextToScreen("Player One Won!", audioOn);
     if (player.board[x][y].value === null) {
@@ -27,7 +36,7 @@ const playerOnesShot = (playerOne, x, y, player, square, playerTwo, audioOn) => 
     disableBoardClick(playerTwoBoard);
     setTimeout(() => enableBoardClick(playerTwoBoard), 6000);
     playerOne.addToSonar(20);
-    playerOne.addToWrench(50);
+    playerOne.addToWrench(30);
     sonarConditions(playerOne, audioOn, playerTwo);
     wrenchConditions(playerOne, audioOn);
 };
@@ -40,7 +49,9 @@ const playerTwosShot = (playerTwo, playerOne, audioOn) => {
             hitSquares[randomIndex][0],
             hitSquares[randomIndex][1],
             playerTwo,
-            audioOn
+            audioOn,
+            playerOne,
+            playerTwo
         );
     } else if (playerOne.heatSeekingList.length > 0) {
         const heatSeekingCoord = playerOne.heatSeekingList.shift();
@@ -49,7 +60,8 @@ const playerTwosShot = (playerTwo, playerOne, audioOn) => {
             `Player Two: ${checkSquare(
                 playerOne,
                 heatSeekingCoord[0],
-                heatSeekingCoord[1], audioOn
+                heatSeekingCoord[1],
+                audioOn
             )}`,
             audioOn
         );
@@ -60,7 +72,8 @@ const playerTwosShot = (playerTwo, playerOne, audioOn) => {
             `Player Two: ${checkSquare(
                 playerOne,
                 secondaryHeatSeeker[0],
-                secondaryHeatSeeker[1], audioOn
+                secondaryHeatSeeker[1],
+                audioOn
             )}`,
             audioOn
         );
@@ -82,7 +95,8 @@ const playerTwosShot = (playerTwo, playerOne, audioOn) => {
             `Player Two: ${checkSquare(
                 playerOne,
                 list[index][0],
-                list[index][1], audioOn
+                list[index][1],
+                audioOn
             )}`,
             audioOn
         );
@@ -95,7 +109,7 @@ const playerTwosShot = (playerTwo, playerOne, audioOn) => {
         ? (playerOneSquare.style.backgroundColor = "rgba(255, 255, 255, 0.6)")
         : (playerOneSquare.style.backgroundColor = "rgba(255, 0, 0, 0.7)");
     playerTwo.addToSonar(20);
-    playerTwo.addToWrench(60);
+    playerTwo.addToWrench(30);
     sonarConditions(playerTwo, audioOn, playerTwo);
     wrenchConditions(playerTwo, audioOn);
     if (playerOne.shipsLeft === 0)
